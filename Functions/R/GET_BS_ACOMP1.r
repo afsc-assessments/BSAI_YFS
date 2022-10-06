@@ -1,4 +1,4 @@
-GET_BS_ACOMP1<-function(srv_sp_str="21720",max_age=12,Seas=1,FLT=4,Gender=1,Part=0,Ageerr=0,Lgin_lo=1,Lgin_hi=120,Nsamp=100,VAST=TRUE,vast_file="Proportions.csv"){
+GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part=0,Ageerr=0,Lgin_lo=1,Lgin_hi=120,Nsamp=100,VAST=FALSE,vast_file="Proportions.csv"){
  ## create sql query
  species = srv_sp_str
  Count = readLines('sql/count_EBS.sql')
@@ -16,7 +16,7 @@ GET_BS_ACOMP1<-function(srv_sp_str="21720",max_age=12,Seas=1,FLT=4,Gender=1,Part
  #    			afsc.race_length_nbs
  #		WHERE
  #   			 afsc.race_length_nbs.species_code = ",srv_sp_str,
- #		"GROUP BY
+ #		"GROUP BYs
  #   			 afsc.race_length_nbs.species_code,
  #    			afsc.race_length_nbs.cruise
  #		ORDER BY

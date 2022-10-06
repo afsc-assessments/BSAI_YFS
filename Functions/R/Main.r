@@ -3,6 +3,7 @@ setwd("C:/Users/ingrid.spies/Downloads/FunctionsYFS/Functions")  ## need to set 
 source('R/utils.r')
 source('R/LENGTH_BY_CATCH_BS_short.r')
 source('R/GET_BS_BIOM.r')
+source('R/GET_BS_ACOMP1.r')
 
 devtools::install_github("BenWilliams-NOAA/swo")
 
@@ -21,6 +22,9 @@ akfin_pwd  = "sed3r3ct"   ## enter AKFIN password
 
 afsc = DBI::dbConnect(odbc::odbc(), "afsc", UID = afsc_user, PWD = afsc_pwd)
 akfin = DBI::dbConnect(odbc::odbc(), "akfin",UID = akfin_user, PWD = akfin_pwd)
+
+GET_BS_BIOM(srv_sp_str="10210")
+GET_BS_ACOMP1()
 
 
 ysolF_LCOMP=LENGTH_BY_CATCH_short(species= 140 ,species_catch= 'YSOL', for_species_catch='YELLOWFIN SOLE',sp_area='BS' ,ly=2022, SEX=TRUE, PORT=FALSE)
@@ -74,6 +78,3 @@ oac_matrix[k,]=c(T5_f,T5_m)
 
 write.csv(oac_matrix,"C:/Users/ingrid.spies/Downloads/oac_matrix.csv")
 
-ysolF_LCOMP[[1]] ## length comp with single fleet
-aipcod[[1]] ## length comp with single fleet
-aipcod[[2]] ## length comp with three fleets
