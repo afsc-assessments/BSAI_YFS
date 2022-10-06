@@ -93,6 +93,9 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
   Acomp3$AGEPOP<-Acomp3$SUM_AGEPOP+Acomp3$SUM_AGEPOP_NBS
   
   Acomp<-data.frame(YEAR=Acomp3$YEAR,AGE=Acomp3$AGE,AGEPOP=Acomp3$AGEPOP)
+  Acomp1_plus<-data.frame(YEAR=Acomp1$YEAR,AGE=Acomp1$AGE,AGEPOP=Acomp1$SUM_AGEPOP)
+  max_age=20
+  #set up an EBS and NBS dataset
   
   YR<-unique(sort(Acomp$YEAR))
   grid=expand.grid(AGE=c(0:max_age),YEAR=YR)
@@ -107,6 +110,31 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
   
   Acomp<-merge(grid,Acomp,all=T)
   Acomp$AGEPOP[is.na(Acomp$AGEPOP)==T]<-0
+ }
+ 
+ 
+ #set up an EBS only dataset
+ 
+ YR<-unique(sort(Acomp1_plus$YEAR))
+ grid=expand.grid(AGE=c(0:max_age),YEAR=YR)
+ Acomp20<-subset(Acomp1_plus,Acomp1_plus$AGE>=max_age)
+ 
+ if(nrow(Acomp20)>0){
+   A20<-aggregate(list(AGEPOP=Acomp20$AGEPOP),by=list(YEAR=Acomp20$YEAR),FUN=sum)
+   A20$AGE=max_age
+   Acomp1_plus<-subset(Acomp1_plus,Acomp1_plus$AGE<max_age)
+   Acomp1_plus<-merge(Acomp1_plus,A20,all=T)
+ }
+ 
+ Acomp1_plus<-merge(grid,Acomp1_plus,all=T)
+ Acomp1_plus$AGEPOP[is.na(Acomp1_plus$AGEPOP)==T]<-0
+ 
+ 
+ write.csv(Acomp1,"YFS_SurveyAgecompEBSNBS.csv")
+ write.csv(Acomp1_plus,"YFS_SurveyAgecompEBS.csv")
+ 
+
+ 
  }
  
  if(VAST){
