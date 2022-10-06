@@ -44,6 +44,7 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
     			haehnr.agecomp_ebs_plusnw_stratum.year,
     			haehnr.agecomp_ebs_plusnw_stratum.stratum,
     			haehnr.agecomp_ebs_plusnw_stratum.age,
+    			haehnr.agecomp_ebs_plusnw_stratum.sex,
     			SUM(haehnr.agecomp_ebs_plusnw_stratum.agepop) AS sum_agepop,
     			haehnr.agecomp_ebs_plusnw_stratum.species_code
 		FROM
@@ -57,6 +58,7 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
     			haehnr.agecomp_ebs_plusnw_stratum.year,
     			haehnr.agecomp_ebs_plusnw_stratum.stratum,
     			haehnr.agecomp_ebs_plusnw_stratum.age,
+    			haehnr.agecomp_ebs_plusnw_stratum.sex,
     			haehnr.agecomp_ebs_plusnw_stratum.species_code
 			ORDER BY
     			haehnr.agecomp_ebs_plusnw_stratum.year,
@@ -67,6 +69,7 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
     			haehnr.agecomp_nbs_stratum.year,
     			haehnr.agecomp_nbs_stratum.stratum,
     			haehnr.agecomp_nbs_stratum.age,
+    			haehnr.agecomp_nbs_stratum.sex,
     			SUM(haehnr.agecomp_nbs_stratum.agepop) AS sum_agepop_NBS,
     			haehnr.agecomp_nbs_stratum.species_code
 		FROM
@@ -80,6 +83,7 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
     			haehnr.agecomp_nbs_stratum.year,
     			haehnr.agecomp_nbs_stratum.stratum,
     			haehnr.agecomp_nbs_stratum.age,
+    			haehnr.agecomp_nbs_stratum.sex,
     			haehnr.agecomp_nbs_stratum.species_code
 		ORDER BY
     			haehnr.agecomp_nbs_stratum.year,
@@ -92,8 +96,8 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
   Acomp3[is.na(SUM_AGEPOP_NBS)]$SUM_AGEPOP_NBS<-0
   Acomp3$AGEPOP<-Acomp3$SUM_AGEPOP+Acomp3$SUM_AGEPOP_NBS
   
-  Acomp<-data.frame(YEAR=Acomp3$YEAR,AGE=Acomp3$AGE,AGEPOP=Acomp3$AGEPOP)
-  Acomp1_plus<-data.frame(YEAR=Acomp1$YEAR,AGE=Acomp1$AGE,AGEPOP=Acomp1$SUM_AGEPOP)
+  Acomp<-data.frame(YEAR=Acomp3$YEAR,AGE=Acomp3$AGE,SEX=Acomp3$SEX,AGEPOP=Acomp3$AGEPOP)
+  Acomp1_plus<-data.frame(YEAR=Acomp1$YEAR,AGE=Acomp1$AGE,SEX=Acomp1$SEX,AGEPOP=Acomp1$SUM_AGEPOP)
   max_age=20
   #set up an EBS and NBS dataset
   
