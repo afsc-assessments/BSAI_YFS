@@ -1,3 +1,9 @@
+#This set of code includes instructions for putting together the input file for the fm model (yfs_2021.dat, etc.)
+
+#For any RACEBASE queries, YFS is 10210.
+#In Obsint (observer database), YFS is 140.
+#AI catches of YFS are considered  negligible so the AI data is not used in the assessment.
+
 setwd("C:/Users/ingrid.spies/Downloads/FunctionsYFS/Functions")  ## need to set the working directory to the Functions folder  
 
 source('R/utils.r')
@@ -13,12 +19,10 @@ if(length(libs[which(libs %in% rownames(installed.packages()) == FALSE )]) > 0) 
   install.packages(libs[which(libs %in% rownames(installed.packages()) == FALSE)])}
   lapply(libs, library, character.only = TRUE)
 
-
 afsc_user  = "spiesi"   ## enter afsc username
 afsc_pwd   = "ISis_aug_31324"    ## enter afsc password
 akfin_user = "ispies"  ## enter AKFIN username
 akfin_pwd  = "sed3r3ct"   ## enter AKFIN password
-
 
 afsc = DBI::dbConnect(odbc::odbc(), "afsc", UID = afsc_user, PWD = afsc_pwd)
 akfin = DBI::dbConnect(odbc::odbc(), "akfin",UID = akfin_user, PWD = akfin_pwd)
@@ -27,13 +31,11 @@ GET_BS_BIOM(srv_sp_str="10210")
 GET_BS_ACOMP1()
 
 
+#oac_fsh
 ysolF_LCOMP=LENGTH_BY_CATCH_short(species= 140 ,species_catch= 'YSOL', for_species_catch='YELLOWFIN SOLE',sp_area='BS' ,ly=2022, SEX=TRUE, PORT=FALSE)
 ggplot(ysolF_LCOMP[[1]][LENGTH<60],aes(x=LENGTH,y=FREQ,color=SEX))+geom_line()+facet_wrap(~YEAR)+theme_bw(base_size=16)+labs(title="Bering Sea Yellowfin Sole fishery length compositions by year")+xlab("Length (cm)")+ylab("Frequency")
 
-
 YFS_lens=data.frame(ysolF_LCOMP[[1]])
-
-
 
 YFSAGE=GET_DOM_AGE(fsh_sp_str="140",sp_area="'BS'",max_age=45)
 
