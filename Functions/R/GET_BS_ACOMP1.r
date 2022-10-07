@@ -137,7 +137,7 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
  Acomp1_plus$AGEPOP[is.na(Acomp1_plus$AGEPOP)==T]<-0
  
  
- write.csv(Acomp1,"YFS_SurveyAgecompEBSNBS.csv")
+ write.csv(Acomp,"YFS_SurveyAgecompEBSNBS.csv")
  write.csv(Acomp1_plus,"YFS_SurveyAgecompEBS.csv")
  
 
