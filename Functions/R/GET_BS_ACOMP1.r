@@ -92,27 +92,30 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
   ## run database query
   Acomp1 = sqlQuery(AFSC,test1)
   Acomp2 = sqlQuery(AFSC,test2)
+  
   Acomp3 = data.table(merge(Acomp1,Acomp2,all=T))
   Acomp3[is.na(SUM_AGEPOP_NBS)]$SUM_AGEPOP_NBS<-0
   Acomp3$AGEPOP<-Acomp3$SUM_AGEPOP+Acomp3$SUM_AGEPOP_NBS
-  
   Acomp<-data.frame(YEAR=Acomp3$YEAR,AGE=Acomp3$AGE,SEX=Acomp3$SEX,AGEPOP=Acomp3$AGEPOP)
-  Acomp1_plus<-data.frame(YEAR=Acomp1$YEAR,AGE=Acomp1$AGE,SEX=Acomp1$SEX,AGEPOP=Acomp1$SUM_AGEPOP)
+  
+  AcompEBS = data.table(Acomp1)
+  AcompEBS[is.na(SUM_AGEPOP)]$SUM_AGEPOP<-0
+  Acomp1_plus<-data.frame(YEAR=AcompEBS$YEAR,AGE=AcompEBS$AGE,SEX=AcompEBS$SEX,AGEPOP=AcompEBS$SUM_AGEPOP)
   max_age=20
   #set up an EBS and NBS dataset
   
   YR<-unique(sort(Acomp$YEAR))
-  grid=expand.grid(AGE=c(0:max_age),YEAR=YR)
+  grid30=expand.grid(AGE=c(0:max_age),YEAR=YR)
   Acomp30<-subset(Acomp,Acomp$AGE>=max_age)
   
   if(nrow(Acomp30)>0){
-   A30<-aggregate(list(AGEPOP=Acomp30$AGEPOP),by=list(YEAR=Acomp30$YEAR),FUN=sum)
+   A30<-aggregate(list(AGEPOP=Acomp30$AGEPOP),by=list(YEAR=Acomp30$YEAR,SEX=Acomp30$SEX),FUN=sum)
    A30$AGE=max_age
    Acomp<-subset(Acomp,Acomp$AGE<max_age)
    Acomp<-merge(Acomp,A30,all=T)
   }
   
-  Acomp<-merge(grid,Acomp,all=T)
+  Acomp<-merge(grid30,Acomp,all=T)
   Acomp$AGEPOP[is.na(Acomp$AGEPOP)==T]<-0
  }
  
@@ -120,17 +123,17 @@ GET_BS_ACOMP1<-function(srv_sp_str="10210",max_age=45,Seas=1,FLT=4,Gender=1,Part
  #set up an EBS only dataset
  
  YR<-unique(sort(Acomp1_plus$YEAR))
- grid=expand.grid(AGE=c(0:max_age),YEAR=YR)
+ grid20=expand.grid(AGE=c(0:max_age),YEAR=YR)
  Acomp20<-subset(Acomp1_plus,Acomp1_plus$AGE>=max_age)
  
  if(nrow(Acomp20)>0){
-   A20<-aggregate(list(AGEPOP=Acomp20$AGEPOP),by=list(YEAR=Acomp20$YEAR),FUN=sum)
+   A20<-aggregate(list(AGEPOP=Acomp20$AGEPOP),by=list(YEAR=Acomp20$YEAR,SEX=Acomp20$SEX),FUN=sum)
    A20$AGE=max_age
    Acomp1_plus<-subset(Acomp1_plus,Acomp1_plus$AGE<max_age)
    Acomp1_plus<-merge(Acomp1_plus,A20,all=T)
  }
  
- Acomp1_plus<-merge(grid,Acomp1_plus,all=T)
+ Acomp1_plus<-merge(grid20,Acomp1_plus,all=T)
  Acomp1_plus$AGEPOP[is.na(Acomp1_plus$AGEPOP)==T]<-0
  
  
