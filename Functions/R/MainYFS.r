@@ -133,3 +133,12 @@ write.csv(round(mat_wtage_srv_F),"/Users/ingridspies/Downloads/mat_wtage_srv_F.c
 write.csv(round(mat_wtage_srv_M),"/Users/ingridspies/Downloads/mat_wtage_srv_M.csv")
 #males age 1 just add 4g for weight and females add 6g for weight.
 
+
+#get bottom temperature
+bottomtemp=coldpool::cold_pool_index$MEAN_BT_LT100M
+tempanom=bottomtemp-mean(bottomtemp)
+
+#get date anomaly
+
+my_date <- as.Date("2022-05-31")
+my_julian2 <- format(my_date, "%j")
