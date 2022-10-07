@@ -23,3 +23,30 @@ GET_BS_BIOM <- function(srv_sp_str="10210")
  sum.biom
  
 }
+
+
+haehnr.agecomp_nbs_stratum.year,
+haehnr.agecomp_nbs_stratum.stratum,
+haehnr.agecomp_nbs_stratum.age,
+haehnr.agecomp_nbs_stratum.sex,
+haehnr.agecomp_nbs_stratum.species_code
+
+NBS<-paste("SELECT haehnr.BIOMASS_NBS_AKFIN.YEAR as YEAR,\n ",
+                 "haehnr.BIOMASS_NBS_AKFIN.STRATUM_BIOMASS as BIOM,\n ",
+                 "haehnr.BIOMASS_NBS_AKFIN.STRATUM_POP as POP,\n ",
+                 "haehnr.BIOMASS_NBS_AKFIN.BIOMASS_VAR as BIOMVAR,\n ",
+                 "haehnr.BIOMASS_NBS_AKFIN.POP_VAR as POPVAR,\n ",
+                 "haehnr.BIOMASS_NBS_AKFIN.HAUL_COUNT as NUMHAULS,\n ",
+                 "haehnr.BIOMASS_NBS_AKFIN.CATCH_COUNT as NUMCAUGHT\n ",
+                 "FROM haehnr.BIOMASS_NBS_AKFIN\n ",
+                 "WHERE haehnr.BIOMASS_NBS_AKFIN.STRATUM = 999 \n",
+                 "AND haehnr.BIOMASS_NBS_AKFIN.SPECIES_CODE in (",srv_sp_str,") \n ",
+                 "ORDER BY haehnr.BIOMASS_NBS_AKFIN.YEAR",sep="")
+
+biomNBS <- sqlQuery(AFSC,NBS)
+biomNBS <- sql_run(afsc,NBS)
+
+biomNBS <- sqlQuery(afsc,NBS)
+biomNBS <- sql_run(AFSC,NBS)
+
+
