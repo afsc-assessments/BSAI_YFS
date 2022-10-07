@@ -26,8 +26,13 @@ akfin_pwd  = "sed3r3ct"   ## enter AKFIN password
 
 afsc = DBI::dbConnect(odbc::odbc(), "afsc", UID = afsc_user, PWD = afsc_pwd)
 akfin = DBI::dbConnect(odbc::odbc(), "akfin",UID = akfin_user, PWD = akfin_pwd)
+AFSC=odbcConnect("AFSC",afsc_user,afsc_pass,believeNRows=FALSE)
+CHINA=odbcConnect("AKFIN",akfin_user,akfin_pass,believeNRows=FALSE)
 
+#survey biomass
 GET_BS_BIOM(srv_sp_str="10210")
+
+#oac_srv go into this function to create survey age comps for EBS and EBS+NBS
 GET_BS_ACOMP1()
 
 
