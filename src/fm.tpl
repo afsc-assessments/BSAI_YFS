@@ -239,6 +239,7 @@ DATA_SECTION
   init_matrix obs_catch(1,nfsh,styr,endyr)             //Catch (t)
   !!log_input(nfsh);
   !!log_input(obs_catch);
+  !!cout<<"obs_catch"<<obs_catch<<endl;
 
   // Read in fishery age data-------------------------------------
   init_ivector nyrs_fsh_age_c(1,nfsh)                    //Number of fishery age compositions (combined sex)
@@ -246,15 +247,19 @@ DATA_SECTION
   !!log_input(nyrs_fsh_age_c); log_input(nyrs_fsh_age_s);
   init_imatrix yrs_fsh_age_c(1,nfsh,1,nyrs_fsh_age_c)      //Years of fishery index value (annual)
   init_imatrix yrs_fsh_age_s(1,nfsh,1,nyrs_fsh_age_s)      //Years of fishery index value (annual)
+  !!cout <<"yrs_fsh_age_c"<<yrs_fsh_age_c<<endl;
+  !!cout <<"yrs_fsh_age_s"<<yrs_fsh_age_s<<endl;
   !!log_input(yrs_fsh_age_c); log_input(yrs_fsh_age_s);
   init_3darray oac_fsh_c(1,nfsh,1,nyrs_fsh_age_c,1,nages)  //Fishery age compositions
-  // !!cout <<oac_fsh_c<< endl<<"Finished reading Fishery Age data..."<<endl;
   init_3darray oac_fsh_s(1,nfsh,1,nyrs_fsh_age_s,1,2*nages)  //Fishery age compositions
+  !!cout <<"oac_fsh_c"<<oac_fsh_c<<endl;
+  !!cout <<"oac_fsh_s"<<oac_fsh_s<<endl;
   !!log_input(oac_fsh_c); log_input(oac_fsh_s); 
   init_3darray wt_fsh_in(1,nfsh,styr,endyr,1,2*nages)       //Values of fishery weight at age (g)
   3darray   wt_fsh_b_in(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
   3darray wt_fsh_f_in(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
   3darray wt_fsh_m_in(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
+  !!cout<<"wt_fsh_in"<<wt_fsh_in<<endl;
  LOCAL_CALCS
   for (int k=1;k<=nfsh;k++) 
     for (int i=styr;i<=endyr;i++) 
@@ -297,7 +302,7 @@ DATA_SECTION
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
   init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values  
-  !!cout<<"yrs_srv"<<yrs_srv<<endl;  
+  !!cout<<"yrs_srv"<<yrs_srv<<endl; 
 	// !! nyrs_srv_inbag = 0.9 * nyrs_srv;
 	// !! nyrs_srv_oobag = nyrs_srv - nyrs_srv_inbag;
   // imatrix yrs_srv_inbag(1,nsrv,1,nyrs_srv_inbag)   //Years of the survey index values
@@ -317,6 +322,7 @@ DATA_SECTION
   init_matrix yrs_srv_age_c(1,nsrv,1,nyrs_srv_age_c)  //Years of survey age compositions
   init_matrix yrs_srv_age_s(1,nsrv,1,nyrs_srv_age_s)  //Years of survey age compositions   
   !!cout<<"yrs_srv_age_s"<<yrs_srv_age_s<<endl;
+
   !!log_input( nyrs_srv_age_c);
   !!log_input( nyrs_srv_age_s);
   !!log_input(  yrs_srv_age_c);
@@ -332,6 +338,7 @@ DATA_SECTION
   init_3darray wt_srv_f_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)
   init_3darray wt_srv_m_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)  
   !!cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
+  !!exit(1);
   matrix          wt_obs_f(styr_wt,endyr_wt,1,nages);
   matrix          wt_obs_m(styr_wt,endyr_wt,1,nages);
   !! for (i=styr_wt;i<=endyr_wt;i++) {wt_obs_f(i) = wt_srv_f_in(1,i); wt_obs_m(i) = wt_srv_m_in(1,i); }

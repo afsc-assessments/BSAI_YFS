@@ -34,30 +34,34 @@ CHINA=odbcConnect("AKFIN",akfin_user,akfin_pass,believeNRows=FALSE)
 GET_BS_BIOM(srv_sp_str="10210")
 
 #oac_srv go into this function to create survey age comps for EBS and EBS+NBS
-GET_BS_ACOMP1()
+GET_BS_ACOMP1()  #will give you the two files below.
 
-table(srv_wtage$REGION)#some GOA and BS in here.
-#yrs=as.numeric(names(table(srv_wtage$Year[which(srv_wtage$REGION=='BS')])))#do 1982 and later
+#Survey weight at age
+#Get survey age frequencies. These were normalized to the observed length frequencies in the population and These are just normalized so that males and females add to 1.
+srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS_SurveyAgecompEBS.csv",header=TRUE)
+srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS_SurveyAgecompEBSNBS.csv",header=TRUE)
+colnames(srv_age)[5]='AGEPOP'
 
-yrs=seq(1982,2022,1)[-39]
-mat_wtage_srv_F=matrix(0,length(yrs),20)
-colnames(mat_wtage_srv_F)=seq(1,20,1)
-rownames(mat_wtage_srv_F)=yrs
-mat_wtage_srv_M=mat_wtage_srv_F
-age=seq(1,20,1)
-for (i in 1:length(yrs)){
+yrs=names(table(srv_age$YEAR))
+agematF=matrix(0,length(yrs),20)
+colnames(agematF)=seq(1,20,1);rownames(agematF)=yrs
+agematM=agematF
+
+for(i in 1:length(yrs)){
  for(j in 1:19){
-  mat_wtage_srv_F[i,j]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='2')],na.rm=TRUE)
-  mat_wtage_srv_F[i,20]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='2')],na.rm=TRUE)
-  mat_wtage_srv_M[i,j]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='1')],na.rm=TRUE)
-  mat_wtage_srv_M[i,20]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='1')],na.rm=TRUE)
+  agematF[i,j]=sum(srv_age$AGEPOP[which(srv_age$YEAR==yrs[i]&srv_age$AGE==j&srv_age$SEX==2)],na.rm=TRUE)
+  agematM[i,j]=sum(srv_age$AGEPOP[which(srv_age$YEAR==yrs[i]&srv_age$AGE==j&srv_age$SEX==1)],na.rm=TRUE)
+  agematF[i,20]=sum(srv_age$AGEPOP[which(srv_age$YEAR==yrs[i]&srv_age$AGE>19&srv_age$SEX==2)],na.rm=TRUE)
+  agematM[i,20]=sum(srv_age$AGEPOP[which(srv_age$YEAR==yrs[i]&srv_age$AGE>19&srv_age$SEX==1)],na.rm=TRUE)
  }
 }
-write.csv(round(mat_wtage_srv_F),"/Users/ingridspies/Downloads/mat_wtage_srv_F.csv")
-write.csv(round(mat_wtage_srv_M),"/Users/ingridspies/Downloads/mat_wtage_srv_M.csv")
-#males age 1 just add 4g for weight and females add 6g for weight.
+agematF_n=agematF/rowSums(agematF)
+agematM_n=agematM/rowSums(agematM)
+agematF_nn=agematF_n*(rowSums(agematF)/(rowSums(agematF)+rowSums(agematM)))
+agematM_nn=agematM_n*(rowSums(agematM)/(rowSums(agematF)+rowSums(agematM)))
 
-
+oac_srv=cbind(agematF_nn,agematM_nn)
+write.csv(oac_srv,"/Users/ingridspies/Downloads/oac_srv.csv")
 
 #oac_fsh
 ysolF_LCOMP=LENGTH_BY_CATCH_short(species= 140 ,species_catch= 'YSOL', for_species_catch='YELLOWFIN SOLE',sp_area='BS' ,ly=2022, SEX=TRUE, PORT=FALSE)
