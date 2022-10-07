@@ -10,6 +10,7 @@ source('R/utils.r')
 source('R/LENGTH_BY_CATCH_BS_short.r')
 source('R/GET_BS_BIOM.r')
 source('R/GET_BS_ACOMP1.r')
+source('R/GET_RAW_AGE_LEN_WT.R')
 
 devtools::install_github("BenWilliams-NOAA/swo")
 
@@ -34,6 +35,28 @@ GET_BS_BIOM(srv_sp_str="10210")
 
 #oac_srv go into this function to create survey age comps for EBS and EBS+NBS
 GET_BS_ACOMP1()
+
+table(srv_wtage$REGION)#some GOA and BS in here.
+#yrs=as.numeric(names(table(srv_wtage$Year[which(srv_wtage$REGION=='BS')])))#do 1982 and later
+
+yrs=seq(1982,2022,1)[-39]
+mat_wtage_srv_F=matrix(0,length(yrs),20)
+colnames(mat_wtage_srv_F)=seq(1,20,1)
+rownames(mat_wtage_srv_F)=yrs
+mat_wtage_srv_M=mat_wtage_srv_F
+age=seq(1,20,1)
+for (i in 1:length(yrs)){
+ for(j in 1:19){
+  mat_wtage_srv_F[i,j]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='2')],na.rm=TRUE)
+  mat_wtage_srv_F[i,20]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='2')],na.rm=TRUE)
+  mat_wtage_srv_M[i,j]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='1')],na.rm=TRUE)
+  mat_wtage_srv_M[i,20]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='1')],na.rm=TRUE)
+ }
+}
+write.csv(round(mat_wtage_srv_F),"/Users/ingridspies/Downloads/mat_wtage_srv_F.csv")
+write.csv(round(mat_wtage_srv_M),"/Users/ingridspies/Downloads/mat_wtage_srv_M.csv")
+#males age 1 just add 4g for weight and females add 6g for weight.
+
 
 
 #oac_fsh
@@ -84,4 +107,29 @@ oac_matrix[k,]=c(T5_f,T5_m)
 }
 
 write.csv(oac_matrix,"C:/Users/ingrid.spies/Downloads/oac_matrix.csv")
+
+
+#Get survey weight at age
+srv_wtage=GET_RAW_AGE_LEN_WT()
+
+table(srv_wtage$REGION)#some GOA and BS in here.
+#yrs=as.numeric(names(table(srv_wtage$Year[which(srv_wtage$REGION=='BS')])))#do 1982 and later
+
+yrs=seq(1982,2022,1)[-39]
+mat_wtage_srv_F=matrix(0,length(yrs),20)
+colnames(mat_wtage_srv_F)=seq(1,20,1)
+rownames(mat_wtage_srv_F)=yrs
+mat_wtage_srv_M=mat_wtage_srv_F
+age=seq(1,20,1)
+for (i in 1:length(yrs)){
+ for(j in 1:19){
+  mat_wtage_srv_F[i,j]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='2')],na.rm=TRUE)
+  mat_wtage_srv_F[i,20]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='2')],na.rm=TRUE)
+  mat_wtage_srv_M[i,j]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE==age[j]&srv_wtage$SEX=='1')],na.rm=TRUE)
+  mat_wtage_srv_M[i,20]=mean(srv_wtage$WEIGHT[which(srv_wtage$Year==yrs[i]&srv_wtage$AGE>19&srv_wtage$SEX=='1')],na.rm=TRUE)
+ }
+}
+write.csv(round(mat_wtage_srv_F),"/Users/ingridspies/Downloads/mat_wtage_srv_F.csv")
+write.csv(round(mat_wtage_srv_M),"/Users/ingridspies/Downloads/mat_wtage_srv_M.csv")
+#males age 1 just add 4g for weight and females add 6g for weight.
 
