@@ -40,7 +40,7 @@ GET_BS_ACOMP1()  #will give you the two files below.
 #Get survey age frequencies. These were normalized to the observed length frequencies in the population and These are just normalized so that males and females add to 1.
 srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS_SurveyAgecompEBS.csv",header=TRUE)
 srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS_SurveyAgecompEBSNBS.csv",header=TRUE)
-colnames(srv_age)[5]='AGEPOP'
+colnames(srv_age)[6]='AGEPOP'
 
 yrs=names(table(srv_age$YEAR))
 agematF=matrix(0,length(yrs),20)

@@ -341,9 +341,9 @@ log_input(oac_srv_c);
 log_input(oac_srv_s);
  cout <<"oac_srv_s"<<oac_srv_s<<endl;  
   wt_srv_f_in.allocate(1,nsrv,styr,endyr,1,nages,"wt_srv_f_in");
+cout<<"wt_srv_f_in"<<wt_srv_f_in<<endl;
   wt_srv_m_in.allocate(1,nsrv,styr,endyr,1,nages,"wt_srv_m_in");
 cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
-exit(1);
   wt_obs_f.allocate(styr_wt,endyr_wt,1,nages);
   wt_obs_m.allocate(styr_wt,endyr_wt,1,nages);
  for (i=styr_wt;i<=endyr_wt;i++) {wt_obs_f(i) = wt_srv_f_in(1,i); wt_obs_m(i) = wt_srv_m_in(1,i); }
@@ -351,6 +351,8 @@ log_input(wt_obs_f);
 log_input(wt_obs_m);
   wt_pop_f_in.allocate(styr,endyr,1,nages,"wt_pop_f_in");
   wt_pop_m_in.allocate(styr,endyr,1,nages,"wt_pop_m_in");
+cout<<"wt_pop_f_in"<<wt_pop_f_in<<endl;
+cout<<"wt_pop_m_in"<<wt_pop_m_in<<endl;
   age_vector.allocate(1,2*nages);
  for (int j=1; j<=nages;j++)
   age_vector(j) = double(j);
@@ -359,6 +361,7 @@ log_input(wt_obs_m);
 log_input(wt_pop_f_in);
 log_input(wt_pop_m_in);
   maturity.allocate(styr,endyr,1,nages,"maturity");
+cout<<"maturity"<<maturity<<endl;
 log_input(maturity);
   init_age_comp.allocate("init_age_comp");
 cout<<"init_age_comp"<<init_age_comp<<endl;

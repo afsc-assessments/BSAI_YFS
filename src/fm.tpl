@@ -336,9 +336,9 @@ DATA_SECTION
   !!log_input(oac_srv_s);
   !! cout <<"oac_srv_s"<<oac_srv_s<<endl;  
   init_3darray wt_srv_f_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)
+    !!cout<<"wt_srv_f_in"<<wt_srv_f_in<<endl;
   init_3darray wt_srv_m_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)  
   !!cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
-  !!exit(1);
   matrix          wt_obs_f(styr_wt,endyr_wt,1,nages);
   matrix          wt_obs_m(styr_wt,endyr_wt,1,nages);
   !! for (i=styr_wt;i<=endyr_wt;i++) {wt_obs_f(i) = wt_srv_f_in(1,i); wt_obs_m(i) = wt_srv_m_in(1,i); }
@@ -347,7 +347,8 @@ DATA_SECTION
 
   init_matrix  wt_pop_f_in(styr,endyr,1,nages)                 //Population weight-at-age 
   init_matrix  wt_pop_m_in(styr,endyr,1,nages)                 //Population weight-at-age 
-  
+ !!cout<<"wt_pop_f_in"<<wt_pop_f_in<<endl;
+ !!cout<<"wt_pop_m_in"<<wt_pop_m_in<<endl;
   vector age_vector(1,2*nages);
     !! for (int j=1; j<=nages;j++)
        !!  age_vector(j) = double(j);
@@ -358,6 +359,7 @@ DATA_SECTION
   !!log_input(wt_pop_f_in);
   !!log_input(wt_pop_m_in);
   init_matrix maturity(styr,endyr,1,nages)               //Maturity-at-age
+  !!cout<<"maturity"<<maturity<<endl;
   !!log_input(maturity);
 
   init_number init_age_comp          //Flag whether initial age comp independent or not (0 = NOT)
