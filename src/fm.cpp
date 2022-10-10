@@ -135,13 +135,13 @@ ad_comm::change_datafile_name("mod.ctl");  // GRID
     break;
     case 1 : // Use empirical (values in data file) mean wts at age
     break;
-    case 3 : // start out with base growth values and deviations decomposed by year and age
+    case 2 : // start out with base growth values and deviations decomposed by year and age
     {
       phase_wt = 1;
       phase_growth_cov=-1; 
     }
     break;
-    case 2 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
+    case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
     {
       phase_wt  = -1; 
       phase_growth_cov =  1;
@@ -262,25 +262,19 @@ log_input(b_lw_m);
   obs_catch.allocate(1,nfsh,styr,endyr,"obs_catch");
 log_input(nfsh);
 log_input(obs_catch);
-cout<<"obs_catch"<<obs_catch<<endl;
   nyrs_fsh_age_c.allocate(1,nfsh,"nyrs_fsh_age_c");
   nyrs_fsh_age_s.allocate(1,nfsh,"nyrs_fsh_age_s");
 log_input(nyrs_fsh_age_c); log_input(nyrs_fsh_age_s);
   yrs_fsh_age_c.allocate(1,nfsh,1,nyrs_fsh_age_c,"yrs_fsh_age_c");
   yrs_fsh_age_s.allocate(1,nfsh,1,nyrs_fsh_age_s,"yrs_fsh_age_s");
-cout <<"yrs_fsh_age_c"<<yrs_fsh_age_c<<endl;
-cout <<"yrs_fsh_age_s"<<yrs_fsh_age_s<<endl;
 log_input(yrs_fsh_age_c); log_input(yrs_fsh_age_s);
   oac_fsh_c.allocate(1,nfsh,1,nyrs_fsh_age_c,1,nages,"oac_fsh_c");
   oac_fsh_s.allocate(1,nfsh,1,nyrs_fsh_age_s,1,2*nages,"oac_fsh_s");
-cout <<"oac_fsh_c"<<oac_fsh_c<<endl;
-cout <<"oac_fsh_s"<<oac_fsh_s<<endl;
 log_input(oac_fsh_c); log_input(oac_fsh_s); 
   wt_fsh_in.allocate(1,nfsh,styr,endyr,1,2*nages,"wt_fsh_in");
   wt_fsh_b_in.allocate(1,nfsh,styr,endyr,1,nages);
   wt_fsh_f_in.allocate(1,nfsh,styr,endyr,1,nages);
   wt_fsh_m_in.allocate(1,nfsh,styr,endyr,1,nages);
-cout<<"wt_fsh_in"<<wt_fsh_in<<endl;
   for (int k=1;k<=nfsh;k++) 
     for (int i=styr;i<=endyr;i++) 
       for (int j=1;j<=nages;j++) 
@@ -313,7 +307,7 @@ log_input(nsmpl_fsh_s);
   nyrs_srv.allocate(1,nsrv,"nyrs_srv");
 log_input(nsrv);
   yrs_srv.allocate(1,nsrv,1,nyrs_srv,"yrs_srv");
-cout<<"yrs_srv"<<yrs_srv<<endl; 
+cout<<"yrs_srv"<<yrs_srv<<endl;  
   mo_srv.allocate(1,nsrv,"mo_srv");
   obs_srv.allocate(1,nsrv,1,nyrs_srv,"obs_srv");
   obs_se_srv.allocate(1,nsrv,1,nyrs_srv,"obs_se_srv");
@@ -341,7 +335,6 @@ log_input(oac_srv_c);
 log_input(oac_srv_s);
  cout <<"oac_srv_s"<<oac_srv_s<<endl;  
   wt_srv_f_in.allocate(1,nsrv,styr,endyr,1,nages,"wt_srv_f_in");
-cout<<"wt_srv_f_in"<<wt_srv_f_in<<endl;
   wt_srv_m_in.allocate(1,nsrv,styr,endyr,1,nages,"wt_srv_m_in");
 cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
   wt_obs_f.allocate(styr_wt,endyr_wt,1,nages);
@@ -351,8 +344,6 @@ log_input(wt_obs_f);
 log_input(wt_obs_m);
   wt_pop_f_in.allocate(styr,endyr,1,nages,"wt_pop_f_in");
   wt_pop_m_in.allocate(styr,endyr,1,nages,"wt_pop_m_in");
-cout<<"wt_pop_f_in"<<wt_pop_f_in<<endl;
-cout<<"wt_pop_m_in"<<wt_pop_m_in<<endl;
   age_vector.allocate(1,2*nages);
  for (int j=1; j<=nages;j++)
   age_vector(j) = double(j);
@@ -361,7 +352,6 @@ cout<<"wt_pop_m_in"<<wt_pop_m_in<<endl;
 log_input(wt_pop_f_in);
 log_input(wt_pop_m_in);
   maturity.allocate(styr,endyr,1,nages,"maturity");
-cout<<"maturity"<<maturity<<endl;
 log_input(maturity);
   init_age_comp.allocate("init_age_comp");
 cout<<"init_age_comp"<<init_age_comp<<endl;
@@ -369,8 +359,7 @@ cout<<"init_age_comp"<<init_age_comp<<endl;
 log_input(n_env_cov);
   env_cov.allocate(1,nsrv,1,n_env_cov,1,nyrs_srv,"env_cov");
   for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
-log_input(env_cov);  
-cout<<"env_cov"<<env_cov<<endl; 
+log_input(env_cov);
   rec_lag=1;    //Lag between year-class and recruitment
   if (phase_init_age_comp>0&&init_age_comp > 0)
   {
@@ -525,14 +514,6 @@ model_parameters::model_parameters(int sz,int argc,char * argv[]) :
   incr_dev.allocate(styr+1,endyr,2,nages,"incr_dev");
   #ifndef NO_AD_INITIALIZE
     incr_dev.initialize();
-  #endif
-  Mal_gr.allocate(1,nsrv,styr,endyr,1,20,"Mal_gr");
-  #ifndef NO_AD_INITIALIZE
-    Mal_gr.initialize();
-  #endif
-  Fem_gr.allocate(1,nsrv,styr,endyr,1,20,"Fem_gr");
-  #ifndef NO_AD_INITIALIZE
-    Fem_gr.initialize();
   #endif
   age_incr.allocate(5,nages-5,-10,10,phase_age_incr,"age_incr");
   yr_incr.allocate(styr+1,endyr,-10,10,phase_wt,"yr_incr");
@@ -1079,13 +1060,8 @@ void model_parameters::preliminary_calculations(void)
       wt_vbg_m(j) = value(a_lw_m * pow(Linf_m*(1.-exp(-K_m*(double(j)-t0_m))),b_lw_m));
   }
   base_incr_f(2,nages) = wt_vbg_f(2,nages) - ++wt_vbg_f(1,nages-1);
-  base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1); 
-  //cout <<"wt_vbg_f"<<endl<<wt_vbg_f<<endl;
-  //cout <<"wt_vbg_f(1,nages-1)"<<endl<<wt_vbg_f(1,nages-1)<<endl;
-  //cout <<"wt_vbg_f(2,nages)"<<endl<<wt_vbg_f(2,nages)<<endl;
-  //cout <<"base_incr_f"<<endl<<base_incr_f<<endl;
-  //cout <<"base_incr_m"<<endl<<base_incr_m<<endl; 
-  //exit(1);
+  base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1);
+  // cout <<base_incr_f<<endl<<base_incr_m<<endl;exit(1);
   switch (Growth_Option)
   {
     case 0 : // Use constant time-invariant growth (from base growth parameters)
@@ -1137,95 +1113,11 @@ void model_parameters::preliminary_calculations(void)
     }
     break;
     case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and
-             // set up a matrix of estimated sizes Mal_gr and Fem_gr
-    {     
-	for (i=styr;i<=1981;i++) 
-	  {
-	  Mal_gr(1,i)=wt_vbg_m;
-	  Fem_gr(1,i)=wt_vbg_f;   
-	  } 
-	for (i=1982;i<=endyr;i++)    //fill in average weight at age one 
-	 {    
-       Mal_gr(1,i,1)=wt_vbg_m(1);
-       Fem_gr(1,i,1)=wt_vbg_f(1);
-	 }        
-	  	for (i=1981;i<=2018;i++)      //indexed 1 above so this is through 2019
-	{                             //for males ages 2-12 add temperature effect to growth 
-		for (j = 2; j<=12; j++)
-		{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+.69*env_cov(1,1,i-1980)-.069*env_cov(1,1,i-1980)*env_cov(1,1,i-1980);  
-		}  
-		for (j =13;j<=nages;j++)      //ages 13 and older use average values
-		{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j);  
-		  //base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1);
-		}
-		for (j = 2; j<=13; j++)
-		{
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+.24*env_cov(1,1,i-1980);  
-		}  
-		for (j =14;j<=nages;j++)      //ages 14 and older use average values
-		{
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j);  
-		}
-	}
-      	for (i=2019;i<=2019;i++)       //This is 2020; in 2020 no survey or temperature so just use average growth - maybe get estimate later.  This is
+             // decomposed by year and age
     {
-    	for (j = 2; j<=nages; j++)
-    	{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j);  
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j);  
-    	}
-   
-    }  
-      	for (i=2020;i<=2020;i++)      //indexed 1 above so this is through 2021
-    {
-    	  cout<<i<<endl; 
-    	for (j = 2; j<=12; j++)
-    	{
-    	  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+.69*env_cov(1,1,i-1981)-.069*env_cov(1,1,i-1981)*env_cov(1,1,i-1981);  
-    	}  
-    	for (j =13;j<=nages;j++)  
-    	{
-    	  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j);  
-    	} 
-    	for (j = 2; j<=13; j++)
-    	{
-    	  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+.24*env_cov(1,1,i-1981);  
-    	}  
-    	for (j =14;j<=nages;j++)  
-    	{
-    	  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j);  
-    	}     
-        for (i=styr;i<=endyr;i++)
-        {
-          wt_pop_f(i) = Fem_gr(1,i);
-          wt_pop_m(i) = Mal_gr(1,i);
-        }
-    wt_srv_f=Fem_gr;
-    wt_srv_m=Mal_gr;
-	wt_fsh_f=Fem_gr;
-    wt_fsh_m=Mal_gr;
-    
     }
- 
-  //cout<<"env_cov(1,1,1)"<<env_cov(1,1,1)<<endl;
-  //cout<<"base_incr_f"<<base_incr_f<<endl;
-  //cout<<"nyrs_srv"<<nyrs_srv<<endl; 
-  //cout<<"wt_srv_f"<<wt_srv_f<<endl;  
-  //cout<<"wt_srv_m"<<wt_srv_m<<endl; 
-  //cout<<"wt_pop_f"<<wt_pop_f<<endl;  
-  //cout<<"wt_pop_m"<<wt_pop_m<<endl;
-  //cout<<"wt_fsh_f"<<wt_fsh_f<<endl;  
-  //cout<<"wt_fsh_m"<<wt_fsh_m<<endl;
-  //cout<<"Mal_gr"<<Mal_gr<<endl;
-  //cout<<"Mal_gr(2020,3)"<<Mal_gr(2020,3)<<endl;
-  //cout<<"Mal_gr(2021,3)"<<Mal_gr(2021,3)<<endl; 
-  //cout<<"base_incr_m"<<base_incr_m<<endl; 
-  //cout<<"wt_vbg_m"<<wt_vbg_m<<endl;   
-    }   
     break;
-  }    
+  }
   log_input(wt_fsh_f);
   log_input(wt_fsh_m);
   log_input(wt_srv_f);
@@ -1236,12 +1128,12 @@ void model_parameters::preliminary_calculations(void)
 
 void model_parameters::initializationfunction(void)
 {
-  Linf_m.set_initial_value(36.0729742);
-  K_m.set_initial_value(0.1389764);
-  t0_m.set_initial_value(0.3570081);
-  Linf_f.set_initial_value(40.4644535);
-  K_f.set_initial_value(0.1263367);
-  t0_f.set_initial_value(0.5942688);
+  Linf_m.set_initial_value(34.030);
+  K_m.set_initial_value(0.161);
+  t0_m.set_initial_value(0.515);
+  Linf_f.set_initial_value(38.034);
+  K_f.set_initial_value(0.137);
+  t0_f.set_initial_value(0.297);
   wt_fsh_fut_f.set_initial_value(.8);
   wt_fsh_fut_m.set_initial_value(.8);
   wt_pop_fut_f.set_initial_value(.8);
@@ -1273,10 +1165,6 @@ void model_parameters::initializationfunction(void)
 void model_parameters::userfunction(void)
 {
   obj_fun =0.0;
-  //cout<<"incr_dev"<<incr_dev<<endl;
-  //cout<<"growth_alpha"<<growth_alpha<<endl;
-  //cout<<"growth_cov"<<growth_cov<<endl;  
-  //exit(1);
   // if (Growth_Option>1&&(current_phase()<=1))
   if (Growth_Option>1 && (last_phase()||current_phase()<=phase_wt))
     Get_wt_age();
@@ -1351,9 +1239,9 @@ void model_parameters::userfunction(void)
 			mean_N_srv_age /= double(nyrs_srv_age_c(k) + nyrs_srv_age_s(k));
     }
     evalout << " " <<mean_N_srv_age;
-  } 
 	// Alpha and beta of SRR
-  evalout << " " <<R_alpha<<" "<<R_beta<<endl;
+    evalout << " " <<R_alpha<<" "<<R_beta<<endl;
+  } 
 }
 
 void model_parameters::get_selectivity(void)
@@ -2036,7 +1924,7 @@ void model_parameters::Future_projections(void)
          // future_spr0(i) = get_spr(0.);
        }
        // Set growth if temperature related
-       if (Growth_Option==2)
+       if (Growth_Option==3)
        {
          dvar_vector incr_dev_tmp(2,nages);
          incr_dev_tmp(5,nages-5)     = growth_alpha * fut_temp(i-endyr) ;
@@ -3007,7 +2895,7 @@ void model_parameters::Get_wt_age(void)
       case 1 : // Use empirical (values in data file) mean wts at age
         // No need to do anything since they are initialized at these values...
       break;
-      case 3 : // Use base growth values (not estimated) and deviations decomposed by year and age
+      case 2 : // Use base growth values (not estimated) and deviations decomposed by year and age
       {
         // Do it once for all years then apply to each fishery and survey...
         // initialize survey "1" and first year of growth to mean
@@ -3027,15 +2915,15 @@ void model_parameters::Get_wt_age(void)
         }
         Get_Pred_wt();
       }
-      break;  
-      case 2 : // Use base growth values (not estimated) and deviations as fn of temperature and // decomposed by year and age
+      break;
+      case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and // decomposed by year and age
       {
         Initial_wt();
         for (i=styr+1;i<=endyr;i++)
         {
           // Age component estimated from 5-15
           // if (i >=1982)
-            incr_dev(i)(4,nages-7)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
+            incr_dev(i)(5,nages-5)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
           // else 
           //   incr_dev(i)(5,nages-5)     = 0.;
           incr_dev(i)(nages-4,nages) = incr_dev(i,nages-5) ;
@@ -3279,55 +3167,48 @@ void model_parameters::Write_R(void)
 
 void model_parameters::write_projfile(void)
 {
-    projmod <<"fm_projection_model_output  "<<endl;
-    projmod <<"0 # SSL Species???         " <<endl;                       
-    projmod <<"0 # Constant  buffer  of  Dorn? " <<endl;                          
-    projmod <<"1 # Number  of  fsheries    "<<endl;                          
-    projmod <<"2 # Number  of  sexes??     "<<endl;
+    projmod <<"#runname     \n fm_projection_model_output  "<<endl;
+    projmod <<"#ssl_spp     \n 0 " <<endl;                       
+    projmod <<"#Dorn_buffer \n 0 " <<endl;                          
+    projmod <<"#nfsh        \n   " <<nfsh <<endl;                          
+    projmod <<"#nsex        \n 2 " <<endl;
 		double mean5yrF=0.;
 		for (int iyr=endyr-5;iyr<=endyr;iyr++) 
 		  mean5yrF += max(value(F_f(1,iyr)));  mean5yrF/=5.;
-    projmod <<mean5yrF <<" # averagei 5yr f"<<endl;
-    projmod << "1.0 # author  f            "<<endl;
-    projmod << "0.4     # SPR ABC          "<<endl;               
-    projmod << "0.35    # SPR MSY          "<<endl;
-    projmod << "2 # Spawnmo                "<<endl;
-    projmod << "20  # Number  of  ages     "<<endl;
-    projmod << "1 # Fratio                 "<<endl;
-    projmod << "#females first             "<<endl;
+    projmod << "#avgF5yr \n "<< mean5yrF <<endl;
+    projmod << "#F40_mult \n 1.0  "<<endl;
+    projmod << "#spr_abc  \n 0.4  "<<endl;               
+    projmod << "#spr_abc  \n 0.35 "<<endl;
+    projmod << "#sp_mo \n " <<spawnmo <<endl;
+    projmod << "#nages \n " << nages  <<endl;
+  // Should calc case for number of fisheries >1 OjO
+    projmod << "#Frat \n " << 1 <<endl;
+    projmod << "#M       "      <<endl; 
     for (j=1;j<=nages;j++)  projmod << natmort_f <<" "; projmod<<endl;
-    projmod << "#male"<<endl;
     for (j=1;j<=nages;j++)  projmod << natmort_m <<" "; projmod<<endl;
-    projmod << "# Maturity Females"<<endl;                     
+    projmod << "#pmat "<<endl; // female and male maturity set to be the same...OjO
     for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
-    projmod << "# Maturity Males same as females!!    "<<endl;
     for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
-    projmod << "# Wt  spawn females                                 "<<endl;
+    projmod << "#wtage_sp "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_pop_f(endyr,j) <<" "; projmod<<endl;
-    // SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i),spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
-    // 3darray wt_fsh_f(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
-    projmod << "# WtAge Females,  by  fishery                               "<<endl;
+    projmod << "#wtage_fsh "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_fsh_f(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# WtAge Males,  by  fishery                               "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_fsh_m(1,endyr,j) <<" "; projmod<<endl;
     // 3darray sel_fsh_m(1,nfsh,styr,endyr,1,nages)
-    projmod << "# Selectivity Females,  by  fishery                               "<<endl;
-    for (j=1;j<=nages;j++)  projmod << sel_fsh_f(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# Selectivity males,  by  fishery"<<endl;
-    for (j=1;j<=nages;j++)  projmod << sel_fsh_m(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# N at  age in  endyr  Females,  Males                         "<<endl;
+    projmod << "#sel"<<endl;
+    for (int k=1;k<=nfsh;k++) for (j=1;j<=nages;j++)  projmod << sel_fsh_f(k,endyr,j) <<" "; projmod<<endl;
+    for (int k=1;k<=nfsh;k++) for (j=1;j<=nages;j++)  projmod << sel_fsh_m(k,endyr,j) <<" "; projmod<<endl;
+    projmod << "#N" <<endl;
     for (j=1;j<=nages;j++)  projmod << natage_f(endyr,j) <<" "; projmod<<endl;
     for (j=1;j<=nages;j++)  projmod << natage_m(endyr,j) <<" "; projmod<<endl;
     // matrix natage_f(styr,endyr,1,nages)
-    projmod << "# No  Recruitments "<<endl;                                   
+    projmod << "#nyrs"<<endl;
     int nrecs = endyr - 1977 - 5;                           
     projmod << nrecs <<endl;
-    projmod << "# Recruitment  1978-2004"<<endl;
+    projmod << "#R"<<endl;
     for (j=1978;j<(nrecs+1978);j++)  projmod << natage_f(j,1) <<" "; projmod<<endl;
-    projmod << "# SSB       "<<endl;                                          
-    projmod << "# used only for S/R analysis "<<endl;
+    projmod << "#SSB       "<<endl;                                          // projmod << "# used only for S/R analysis "<<endl;
     for (j=1977;j<(nrecs+1977);j++)  projmod << SSB(j) <<" "; projmod<<endl;
-    // projmod << "60634.2 74206.2 88603.3 99620.3 104246  107030  113149  124035  124795  140114  158678  182136  205398  248734  316385  349013  377421  399774  480785  578688  661617  701288  745334  773574  771844  753292  726387"<<endl;
 }
 
 void model_parameters::final_calcs()
