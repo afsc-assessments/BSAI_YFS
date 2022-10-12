@@ -61,7 +61,7 @@ agematF_nn=agematF_n*(rowSums(agematF)/(rowSums(agematF)+rowSums(agematM)))
 agematM_nn=agematM_n*(rowSums(agematM)/(rowSums(agematF)+rowSums(agematM)))
 
 oac_srv=cbind(agematF_nn,agematM_nn)
-write.csv(oac_srv,"/Users/ingridspies/Downloads/oac_srv.csv")
+write.csv(oac_srv,"/Users/ingridspies/Downloads/oac_srvNBSEBS.csv")
 
 #oac_fsh
 ysolF_LCOMP=LENGTH_BY_CATCH_short(species= 140 ,species_catch= 'YSOL', for_species_catch='YELLOWFIN SOLE',sp_area='BS' ,ly=2022, SEX=TRUE, PORT=FALSE)

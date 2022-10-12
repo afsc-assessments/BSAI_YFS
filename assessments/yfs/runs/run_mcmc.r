@@ -3,7 +3,7 @@
 ### Monnahan (cole.monnahan@noaa.gov | AFSC)
 
 library(adnuts)                         # 1.1.0
-
+library(shinystan)
 ### ------------------------------------------------------------
 ### Step 0: Set up model for running. This requires pointing to a
 ### folder and executable. The folder needs to contain all
@@ -11,9 +11,10 @@ library(adnuts)                         # 1.1.0
 ### working directory during execution
 
 ## Define the path and model name
-m <- 'updated_nr'                               # model name
-p <- 'goa_nr'                                   # path to model
+m <- './fm'                               # model name
+p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0_noSR/'                                   # path to model
 ## Assumes current working directory is where this R script is
+setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0_noSR")
 (wd <- getwd())
 
 ## It also assumes the model was optimized with successful
@@ -42,12 +43,13 @@ setwd(wd)
 thin <- 1000
 iter <- 1000*thin
 fit <- sample_rwm(model=m, path=p, iter=iter, warmup=iter/4,
-                  chains=chains, thin=thin)
-saveRDS(fit, 'fits/goa_nr.RDS')
+                  chains=chains, thin=thin)#This one takes a while
+saveRDS(fit, 'm22_0_noSR.RDS')
 
 ## Key information from run. Including the two recommended
 ## convergence diagnostics:
-fit <- readRDS('fits/goa_nr.RDS')
+fit <- readRDS('m22_0.RDS')
+fit <- readRDS('m22_0_noSR.RDS')
 summary(fit)
 
 ## Stored internally like this but you rarely need to access
