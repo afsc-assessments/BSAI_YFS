@@ -12,9 +12,9 @@ library(shinystan)
 
 ## Define the path and model name
 m <- './fm'                               # model name
-p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0_noSR/'                                   # path to model
+p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0/'                                   # path to model
 ## Assumes current working directory is where this R script is
-setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0_noSR")
+setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0")
 (wd <- getwd())
 
 ## It also assumes the model was optimized with successful
@@ -40,11 +40,11 @@ setwd(wd)
 ## !! Note in some environments like RStudio parallel output is
 ## not printed to screen !!
 
-thin <- 1000
-iter <- 1000*thin
+thin <- 10#10000
+iter <- 10*thin#1000*thin
 fit <- sample_rwm(model=m, path=p, iter=iter, warmup=iter/4,
                   chains=chains, thin=thin)#This one takes a while
-saveRDS(fit, 'm22_0_noSR.RDS')
+saveRDS(fit, 'm22_0_SR.RDS')
 
 ## Key information from run. Including the two recommended
 ## convergence diagnostics:

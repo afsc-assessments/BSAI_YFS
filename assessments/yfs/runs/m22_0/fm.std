@@ -732,15 +732,15 @@
    731   Fmsyr                 1.0824e-01 2.9498e-02
    732   logFmsyr             -2.2234e+00 2.7253e-01
    733   ABC_biom              3.1861e+03 2.2238e+02
-   734   ABC_biom              3.5629e+03 3.7427e+02
-   735   ABC_biom              3.5598e+03 4.4715e+02
-   736   ABC_biom              3.7206e+03 5.1351e+02
-   737   ABC_biom              3.7162e+03 5.5681e+02
-   738   ABC_biom              4.1031e+03 6.6743e+02
-   739   ABC_biom              4.4615e+03 7.5906e+02
-   740   ABC_biom              4.8816e+03 8.7953e+02
-   741   ABC_biom              5.3000e+03 1.0006e+03
-   742   ABC_biom              5.6895e+03 1.1030e+03
+   734   ABC_biom              3.7661e+03 3.7047e+02
+   735   ABC_biom              3.8780e+03 4.3551e+02
+   736   ABC_biom              4.0174e+03 4.9918e+02
+   737   ABC_biom              3.9867e+03 5.4292e+02
+   738   ABC_biom              4.3537e+03 6.5429e+02
+   739   ABC_biom              4.6860e+03 7.4458e+02
+   740   ABC_biom              5.0698e+03 8.5527e+02
+   741   ABC_biom              5.4415e+03 9.5654e+02
+   742   ABC_biom              5.7729e+03 1.0368e+03
    743   Bmsy                  5.4715e+02 8.6936e+01
    744   Bmsyr                 4.6151e+03 4.9562e+02
    745   TotBiom               2.3530e+03 2.0692e+02
@@ -844,16 +844,16 @@
    843   future_catch          1.9445e+02 3.3575e+01
    844   future_catch          2.0484e+02 4.0670e+01
    845   future_catch          2.1988e+02 4.6198e+01
-   846   future_Fs             1.9557e-01 2.8897e-02
-   847   future_Fs             1.4053e-01 2.2258e-02
-   848   future_Fs             5.7185e-02 8.0861e-03
-   849   future_Fs             4.9471e-02 6.8083e-03
-   850   future_Fs             4.6730e-02 6.6281e-03
-   851   future_Fs             4.3562e-02 6.6513e-03
-   852   future_Fs             4.2177e-02 6.6839e-03
-   853   future_Fs             3.9419e-02 6.7539e-03
-   854   future_Fs             3.6020e-02 6.6231e-03
-   855   future_Fs             3.2769e-02 6.3892e-03
+   846   future_Fs             6.6196e-02 9.3084e-03
+   847   future_Fs             5.7567e-02 8.6635e-03
+   848   future_Fs             5.0438e-02 7.0345e-03
+   849   future_Fs             4.4479e-02 6.0169e-03
+   850   future_Fs             4.2522e-02 5.7856e-03
+   851   future_Fs             4.0083e-02 5.7993e-03
+   852   future_Fs             3.9137e-02 5.9156e-03
+   853   future_Fs             3.6977e-02 6.1130e-03
+   854   future_Fs             3.4190e-02 6.1173e-03
+   855   future_Fs             3.1476e-02 5.9088e-03
    856   future_SSB            8.5706e+02 6.1948e+01
    857   future_SSB            8.2750e+02 5.7703e+01
    858   future_SSB            8.5143e+02 6.5684e+01
@@ -894,16 +894,16 @@
    893   future_SSB            1.9661e+03 2.1078e+02
    894   future_SSB            2.0907e+03 2.4428e+02
    895   future_SSB            2.2247e+03 2.7578e+02
-   896   future_SSB            8.3700e+02 6.4906e+01
-   897   future_SSB            7.7076e+02 6.6352e+01
-   898   future_SSB            8.0705e+02 7.4684e+01
-   899   future_SSB            9.4394e+02 9.8724e+01
-   900   future_SSB            1.0812e+03 1.3044e+02
-   901   future_SSB            1.2531e+03 1.7715e+02
-   902   future_SSB            1.3735e+03 2.1530e+02
-   903   future_SSB            1.4685e+03 2.4900e+02
-   904   future_SSB            1.5625e+03 2.7899e+02
-   905   future_SSB            1.6760e+03 3.0880e+02
+   896   future_SSB            8.7164e+02 6.4557e+01
+   897   future_SSB            8.8349e+02 6.5740e+01
+   898   future_SSB            9.5299e+02 7.1663e+01
+   899   future_SSB            1.0891e+03 8.8473e+01
+   900   future_SSB            1.2237e+03 1.1391e+02
+   901   future_SSB            1.3917e+03 1.5700e+02
+   902   future_SSB            1.5050e+03 1.9425e+02
+   903   future_SSB            1.5906e+03 2.2967e+02
+   904   future_SSB            1.6738e+03 2.6185e+02
+   905   future_SSB            1.7755e+03 2.9338e+02
    906   future_TotBiom        3.8416e+03 3.1075e+02
    907   future_TotBiom        4.0358e+03 3.9565e+02
    908   future_TotBiom        4.1152e+03 4.6864e+02
@@ -945,12 +945,12 @@
    944   future_TotBiom        6.6792e+03 9.4353e+02
    945   future_TotBiom        6.9309e+03 9.9089e+02
    946   future_TotBiom        3.8416e+03 3.1075e+02
-   947   future_TotBiom        3.9198e+03 4.0321e+02
-   948   future_TotBiom        3.9852e+03 4.7989e+02
-   949   future_TotBiom        4.2536e+03 5.5279e+02
-   950   future_TotBiom        4.4446e+03 6.1971e+02
-   951   future_TotBiom        4.8740e+03 7.3289e+02
-   952   future_TotBiom        5.2271e+03 8.3204e+02
-   953   future_TotBiom        5.6259e+03 9.4775e+02
-   954   future_TotBiom        6.0049e+03 1.0498e+03
-   955   future_TotBiom        6.3336e+03 1.1297e+03
+   947   future_TotBiom        4.1229e+03 3.9960e+02
+   948   future_TotBiom        4.3025e+03 4.6879e+02
+   949   future_TotBiom        4.5473e+03 5.3874e+02
+   950   future_TotBiom        4.7073e+03 6.0501e+02
+   951   future_TotBiom        5.1074e+03 7.1453e+02
+   952   future_TotBiom        5.4224e+03 8.0482e+02
+   953   future_TotBiom        5.7733e+03 9.0579e+02
+   954   future_TotBiom        6.0963e+03 9.8924e+02
+   955   future_TotBiom        6.3642e+03 1.0522e+03
