@@ -3104,6 +3104,7 @@ void model_parameters::Write_R(void)
   R_report <<"wt_vbg_m" <<endl <<wt_vbg_m<< endl; 
   R_report <<"wt_pop_f" <<endl <<wt_pop_f<< endl;
   R_report <<"wt_pop_m" <<endl <<wt_pop_m<< endl;
+  R_report <<"nsmpl_srv_s"<<endl<<nsmpl_srv_s<< endl;
   R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 
   {

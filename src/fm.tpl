@@ -1743,6 +1743,7 @@ FUNCTION write_srec
   R_report << R_beta <<endl;
   R_report << "sigmaR" <<endl;
   R_report << sigmaR    <<endl;
+  
 FUNCTION compute_spr_rates_2
   //Compute SPR Rates 
   F35 = get_spr_rates(.35);
@@ -2078,6 +2079,7 @@ REPORT_SECTION
   L_report << "m_Prior " <<m_prior <<endl;
   L_report << "sigmaR_Prior " <<sigmaR_prior <<endl;
   L_report << "F_penalty " << fpen << endl;
+
   if (phase_env_cov>0)
   {
     // L_report << "alpha= " << q_alpha << endl;
@@ -2806,6 +2808,7 @@ FUNCTION Write_R
   R_report <<"wt_vbg_m" <<endl <<wt_vbg_m<< endl; 
   R_report <<"wt_pop_f" <<endl <<wt_pop_f<< endl;
   R_report <<"wt_pop_m" <<endl <<wt_pop_m<< endl;
+  R_report <<"nsmpl_srv_s"<<endl<<nsmpl_srv_s<< endl;
    
   R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 

@@ -12,9 +12,9 @@ library(shinystan)
 
 ## Define the path and model name
 m <- './fm'                               # model name
-p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0/'                                   # path to model
+p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_1/'                                   # path to model
 ## Assumes current working directory is where this R script is
-setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0")
+setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_1")
 (wd <- getwd())
 
 ## It also assumes the model was optimized with successful
@@ -29,6 +29,7 @@ setwd(wd)
 ## How many parallel chains to use? I recommend using all cores
 ## but one for laptops. Probably not needed to run more than 8 in
 ## most cases.
+
 (chains <- parallel::detectCores()-1)
 
 ### ------------------------------------------------------------
@@ -40,6 +41,7 @@ setwd(wd)
 ## !! Note in some environments like RStudio parallel output is
 ## not printed to screen !!
 
+set.seed(1)
 thin <- 10#10000
 iter <- 10*thin#1000*thin
 fit <- sample_rwm(model=m, path=p, iter=iter, warmup=iter/4,
