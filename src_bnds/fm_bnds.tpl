@@ -790,8 +790,8 @@ PRELIMINARY_CALCS_SECTION
   }
   for (int j=1;j<=nages;j++)
   {
-      wt_vbg_f(j) = value(a_lw_f * pow(Linf_f*(1.-exp(-K_f*(double(j)-t0_f))),b_lw_f));
-      wt_vbg_m(j) = value(a_lw_m * pow(Linf_m*(1.-exp(-K_m*(double(j)-t0_m))),b_lw_m));
+      wt_vbg_f(j) = value(a_lw_f * pow(Linf_f*(1.-exp(-K_f*(double(j)-t0_f)))+0.00000001,b_lw_f));
+      wt_vbg_m(j) = value(a_lw_m * pow(Linf_m*(1.-exp(-K_m*(double(j)-t0_m)))+0.00000001,b_lw_m));
   }
   base_incr_f(2,nages) = wt_vbg_f(2,nages) - ++wt_vbg_f(1,nages-1);
   base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1);
