@@ -1056,8 +1056,8 @@ void model_parameters::preliminary_calculations(void)
   }
   for (int j=1;j<=nages;j++)
   {
-      wt_vbg_f(j) = value(a_lw_f * pow(Linf_f*(1.-exp(-K_f*(double(j)-t0_f))),b_lw_f));
-      wt_vbg_m(j) = value(a_lw_m * pow(Linf_m*(1.-exp(-K_m*(double(j)-t0_m))),b_lw_m));
+      wt_vbg_f(j) = value(a_lw_f * pow(Linf_f*(1.-exp(-K_f*(double(j)-t0_f)))+0.00000001,b_lw_f));
+      wt_vbg_m(j) = value(a_lw_m * pow(Linf_m*(1.-exp(-K_m*(double(j)-t0_m)))+0.00000001,b_lw_m));
   }
   base_incr_f(2,nages) = wt_vbg_f(2,nages) - ++wt_vbg_f(1,nages-1);
   base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1);
@@ -1380,13 +1380,13 @@ void model_parameters::get_numbers_at_age(void)
     natage_f(i+1)(2,nages)= ++elem_prod(natage_f(i)(1,nages-1),S_f(i)(1,nages-1));
     natage_f(i+1,nages)  +=  natage_f(i,nages)*S_f(i,nages);
     TotBiom(i)=natage_f(i)*wt_pop_f(i) + natage_m(i)*wt_pop_m(i);
-    SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i),spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
+    SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i)+.00000001,spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
 		if (SSB(i)<0) cout <<i<<" "<<wt_pop_f(i)(1,5)<<" "<< maturity(i)(4,7) <<" "<< spmo_frac << endl;
-    // SSB_1         = value(elem_prod(elem_prod(Ntmp,pow(Stmp,spmo_frac)),maturity)*wt_pop_fut);
+    // SSB_1         = value(elem_prod(elem_prod(Ntmp,pow(Stmp+.00000001,spmo_frac)),maturity)*wt_pop_fut);
     pred_rec(i+1) = 2.*natage_f(i+1,1);
   }
  //  SSB(endyr) = (natage(endyr)/2) * elem_prod(wt_pop(endyr),maturity);
-  SSB(endyr)  =  elem_prod(natage_f(endyr),pow(S_f(endyr),spmo_frac)) * elem_prod(wt_pop_f(endyr),maturity(endyr));  //need to add recruitment lag
+  SSB(endyr)  =  elem_prod(natage_f(endyr),pow(S_f(endyr)+.00000001,spmo_frac)) * elem_prod(wt_pop_f(endyr),maturity(endyr));  //need to add recruitment lag
   TotBiom(endyr)   =  natage_f(endyr)*wt_pop_f(endyr) + natage_m(endyr)*wt_pop_m(endyr);
   if (sd_phase())
   {
@@ -1674,14 +1674,14 @@ dvariable model_parameters::spr_ratio(dvariable trial_F,dvar_vector& sel)
   j=1;
   // Sp_Biom_future(i) = elem_prod(wt_pop ,maturity) * elem_prod(nage_future(i),pow(S_future(i),yrfrac)) ;
 	// Note using end-year maturity for spr
-  SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
+  SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j)+.00000001,spmo_frac);
   for (j=2;j<nages;j++)
   {
     Ntmp(j) = Ntmp(j-1)*srvtmp(j-1);
-    SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
+    SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j)+.00000001,spmo_frac);
   }
   Ntmp(nages)=Ntmp(nages-1)*srvtmp(nages-1)/(1.-srvtmp(nages));
-  SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages),spmo_frac);
+  SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages)+.00000001,spmo_frac);
   // cout<<sel_tmp<<endl<< " Trial: "<<trial_F<<" "<<SBtmp<<" Phizero "<<phizero<<endl;
   phizero=get_spr(0.0);
   return(get_spr(trial_F)/phizero);
@@ -1976,7 +1976,7 @@ void model_parameters::Future_projections(void)
       ABC_biom(i)      = nage_future_f(i)(ABC_age_lb,nages) * wt_pop_fut_f(ABC_age_lb,nages); 
       ABC_biom(i)     += nage_future_m(i)(ABC_age_lb,nages) * wt_pop_fut_m(ABC_age_lb,nages); 
     }
-    SSB_future(i)      = elem_prod(nage_future_f(i),pow(S_future_f(i),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
+    SSB_future(i)      = elem_prod(nage_future_f(i),pow(S_future_f(i)+.00000001,spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
     Rectmp             = R_alpha*SSB_future(i)*(mfexp(-R_beta*SSB_future(i)));
     TotBiom_future(i)  = nage_future_f(i)*wt_pop_fut_f; 
     TotBiom_future(i) += nage_future_m(i)*wt_pop_fut_m; 
@@ -1991,7 +1991,7 @@ void model_parameters::Future_projections(void)
     nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(endyr_fut));
     nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
   }
-  SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut),pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
+  SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut),pow(S_future_f(endyr_fut)+.00000001,spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
   TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f;
   TotBiom_future(endyr_fut) += nage_future_m(endyr_fut)*wt_pop_fut_m;
   //Calculations of catch at predicted future age composition
@@ -2091,15 +2091,15 @@ dvariable model_parameters::spr_ratio(dvariable trial_F)
   srvtmp  = mfexp(-(Ftmp + natmort_f) );
   Ntmp(1)=1.;
   j=1;
-  SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
+  SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j)+.00000001,spmo_frac);
   for (j=2;j<nages;j++)
   {
     Ntmp(j) = Ntmp(j-1)*srvtmp(j-1);
-    SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
+    SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j)+.00000001,spmo_frac);
    // !!spmo_frac    =(spawnmo-1)/12.;
   }
   Ntmp(nages)=Ntmp(nages-1)*srvtmp(nages-1)/(1.-srvtmp(nages));
-  SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages),spmo_frac);
+  SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages)+.00000001,spmo_frac);
   RETURN_ARRAYS_DECREMENT();
   return(SBtmp/phizero);
 }
@@ -2812,7 +2812,7 @@ void model_parameters::Write_sd(void)
       S_future(i)   = mfexp(-Z_future(i));
       // nage_future(i,1)  = SRecruit( Sp_Biom_future(i-rec_age) ) * mfexp(rec_dev_future(i)) ;     
       nage_future(i,1)  = meanrec;
-      Sp_Biom_future(i) = wt_mature * elem_prod(nage_future(i),pow(S_future(i),spmo_frac)) ;
+      Sp_Biom_future(i) = wt_mature * elem_prod(nage_future(i),pow(S_future(i)+.00000001,spmo_frac)) ;
       // Now graduate for the next year....
       if (i<endyr_fut)
       {
