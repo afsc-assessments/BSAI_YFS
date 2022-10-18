@@ -40,7 +40,7 @@ GET_BS_ACOMP1()  #will give you the two files below.
 #Get survey age frequencies. These were normalized to the observed length frequencies in the population and These are just normalized so that males and females add to 1.
 srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS_SurveyAgecompEBS.csv",header=TRUE)
 srv_age=read.csv("/Users/ingridspies/Documents/WorkDellStuff/Assessments/YFS/2022/YFS_SurveyAgecompEBSNBS.csv",header=TRUE)
-colnames(srv_age)[5]='AGEPOP'
+colnames(srv_age)[6]='AGEPOP'
 
 yrs=names(table(srv_age$YEAR))
 agematF=matrix(0,length(yrs),20)
@@ -61,7 +61,7 @@ agematF_nn=agematF_n*(rowSums(agematF)/(rowSums(agematF)+rowSums(agematM)))
 agematM_nn=agematM_n*(rowSums(agematM)/(rowSums(agematF)+rowSums(agematM)))
 
 oac_srv=cbind(agematF_nn,agematM_nn)
-write.csv(oac_srv,"/Users/ingridspies/Downloads/oac_srv.csv")
+write.csv(oac_srv,"/Users/ingridspies/Downloads/oac_srvNBSEBS.csv")
 
 #oac_fsh
 ysolF_LCOMP=LENGTH_BY_CATCH_short(species= 140 ,species_catch= 'YSOL', for_species_catch='YELLOWFIN SOLE',sp_area='BS' ,ly=2022, SEX=TRUE, PORT=FALSE)

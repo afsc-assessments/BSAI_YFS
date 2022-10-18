@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////////////////////
 /// Flatfish Model "fm"
 //  To update in 2007: Srec model (check for SigmaR approach, update document to reflect approach)
@@ -84,13 +85,13 @@ DATA_SECTION
     break;
     case 1 : // Use empirical (values in data file) mean wts at age
     break;
-    case 3 : // start out with base growth values and deviations decomposed by year and age
+    case 2 : // start out with base growth values and deviations decomposed by year and age
     {
       phase_wt = 1;
       phase_growth_cov=-1; 
     }
     break;
-    case 2 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
+    case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and decomposed by year and age
     {
       phase_wt  = -1; 
       phase_growth_cov =  1;
@@ -139,7 +140,6 @@ DATA_SECTION
   init_number sigmaR_exp
   init_number sigmaR_sigma
   init_int nselages            //Number of selected ages
-
  LOCAL_CALCS
     log_input(datafile);
     log_input(model_name);
@@ -176,7 +176,6 @@ DATA_SECTION
     log_input(sigmaR_sigma);
     log_input(nselages);
  END_CALCS
-
   init_vector lambda(1,10)     //Vector of emphasis factors
   
   init_int styr_sr             // year to start spawner-recruit fit
@@ -202,7 +201,6 @@ DATA_SECTION
   !! log_input(n_retro); 
   !! log_input(phase_male_sel_offset);      //Phase to begin logistic selectivity estimation
   // End reading control file......................................................
-
   // Open future temperature specified........
   !!ad_comm::change_datafile_name("fut_temp.dat");  
   init_int nyrs_fut;
@@ -210,7 +208,6 @@ DATA_SECTION
   init_vector fut_temp(1,nyrs_fut)
   !! log_input(nyrs_fut); 
   !! log_input(fut_temp); 
-
   // Open datafile specified........
   !!ad_comm::change_datafile_name(datafile);  
   init_int styr
@@ -230,36 +227,27 @@ DATA_SECTION
   !!log_input(b_lw_f);
   !!log_input(a_lw_m);
   !!log_input(b_lw_m);
-
 //!!cout <<styr<<endyr<<nages<<endl;
-
 // Fishery specifics
-
   init_int nfsh                                        //Number of fisheries
   init_matrix obs_catch(1,nfsh,styr,endyr)             //Catch (t)
   !!log_input(nfsh);
   !!log_input(obs_catch);
-  !!cout<<"obs_catch"<<obs_catch<<endl;
-
   // Read in fishery age data-------------------------------------
   init_ivector nyrs_fsh_age_c(1,nfsh)                    //Number of fishery age compositions (combined sex)
   init_ivector nyrs_fsh_age_s(1,nfsh)                    //Number of fishery age compositions (split sex)
   !!log_input(nyrs_fsh_age_c); log_input(nyrs_fsh_age_s);
   init_imatrix yrs_fsh_age_c(1,nfsh,1,nyrs_fsh_age_c)      //Years of fishery index value (annual)
   init_imatrix yrs_fsh_age_s(1,nfsh,1,nyrs_fsh_age_s)      //Years of fishery index value (annual)
-  !!cout <<"yrs_fsh_age_c"<<yrs_fsh_age_c<<endl;
-  !!cout <<"yrs_fsh_age_s"<<yrs_fsh_age_s<<endl;
   !!log_input(yrs_fsh_age_c); log_input(yrs_fsh_age_s);
   init_3darray oac_fsh_c(1,nfsh,1,nyrs_fsh_age_c,1,nages)  //Fishery age compositions
+  // !!cout <<oac_fsh_c<< endl<<"Finished reading Fishery Age data..."<<endl;
   init_3darray oac_fsh_s(1,nfsh,1,nyrs_fsh_age_s,1,2*nages)  //Fishery age compositions
-  !!cout <<"oac_fsh_c"<<oac_fsh_c<<endl;
-  !!cout <<"oac_fsh_s"<<oac_fsh_s<<endl;
   !!log_input(oac_fsh_c); log_input(oac_fsh_s); 
   init_3darray wt_fsh_in(1,nfsh,styr,endyr,1,2*nages)       //Values of fishery weight at age (g)
   3darray   wt_fsh_b_in(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
   3darray wt_fsh_f_in(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
   3darray wt_fsh_m_in(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
-  !!cout<<"wt_fsh_in"<<wt_fsh_in<<endl;
  LOCAL_CALCS
   for (int k=1;k<=nfsh;k++) 
     for (int i=styr;i<=endyr;i++) 
@@ -272,28 +260,23 @@ DATA_SECTION
   log_input(wt_fsh_f_in(1,endyr));
   log_input(wt_fsh_m_in(1,endyr));
  END_CALCS
-
   // NOTE only done for fishery 1, needs to be modified for multiple fisheries...
   matrix wt_fsh_tmp_f(1,nages,styr_wt,endyr_wt)
   matrix wt_fsh_tmp_m(1,nages,styr_wt,endyr_wt)
   matrix wt_pop_tmp_f(1,nages,styr_wt,endyr_wt)
   matrix wt_pop_tmp_m(1,nages,styr_wt,endyr_wt)
-
   vector wt_fsh_mn_f(1,nages)
   vector wt_fsh_mn_m(1,nages)
   vector wt_pop_mn_f(1,nages)
   vector wt_pop_mn_m(1,nages)
-
   vector wt_fsh_sigma_f(1,nages)
   vector wt_fsh_sigma_m(1,nages)
   vector wt_pop_sigma_f(1,nages)
   vector wt_pop_sigma_m(1,nages)
-
   init_matrix nsmpl_fsh_c(1,nfsh,1,nyrs_fsh_age_c)         //Number of age structures read per collection
   init_matrix nsmpl_fsh_s(1,nfsh,1,nyrs_fsh_age_s)         //Number of age structures read per collection
   !!log_input(nsmpl_fsh_c);
   !!log_input(nsmpl_fsh_s);
-
 // Define survey indices
   init_int nsrv                             //Number of surveys
 	ivector phase_q_beta(1,nsrv)
@@ -302,7 +285,7 @@ DATA_SECTION
   // ivector nyrs_srv_inbag(1,nsrv)             //Number of years of annual survey index values
   !!log_input(nsrv);
   init_imatrix yrs_srv(1,nsrv,1,nyrs_srv)   //Years of the survey index values  
-  !!cout<<"yrs_srv"<<yrs_srv<<endl; 
+  !!cout<<"yrs_srv"<<yrs_srv<<endl;  
 	// !! nyrs_srv_inbag = 0.9 * nyrs_srv;
 	// !! nyrs_srv_oobag = nyrs_srv - nyrs_srv_inbag;
   // imatrix yrs_srv_inbag(1,nsrv,1,nyrs_srv_inbag)   //Years of the survey index values
@@ -316,13 +299,11 @@ DATA_SECTION
   !!log_input(obs_se_srv);
   !! obs_lse_srv = elem_div(obs_se_srv,obs_srv);
   !! obs_lse_srv = sqrt(log(square(obs_lse_srv) + 1.));
-
   init_ivector nyrs_srv_age_c(1,nsrv)         //Number of survey age compositions
   init_ivector nyrs_srv_age_s(1,nsrv)         //Number of survey age compositions
   init_matrix yrs_srv_age_c(1,nsrv,1,nyrs_srv_age_c)  //Years of survey age compositions
   init_matrix yrs_srv_age_s(1,nsrv,1,nyrs_srv_age_s)  //Years of survey age compositions   
   !!cout<<"yrs_srv_age_s"<<yrs_srv_age_s<<endl;
-
   !!log_input( nyrs_srv_age_c);
   !!log_input( nyrs_srv_age_s);
   !!log_input(  yrs_srv_age_c);
@@ -338,13 +319,11 @@ DATA_SECTION
   init_3darray wt_srv_f_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)
   init_3darray wt_srv_m_in(1,nsrv,styr,endyr,1,nages)           //Survey weight_at_age (g)  
   !!cout<<"wt_srv_m_in"<<wt_srv_m_in<<endl;
-  !!exit(1);
   matrix          wt_obs_f(styr_wt,endyr_wt,1,nages);
   matrix          wt_obs_m(styr_wt,endyr_wt,1,nages);
   !! for (i=styr_wt;i<=endyr_wt;i++) {wt_obs_f(i) = wt_srv_f_in(1,i); wt_obs_m(i) = wt_srv_m_in(1,i); }
   !!log_input(wt_obs_f);
   !!log_input(wt_obs_m);
-
   init_matrix  wt_pop_f_in(styr,endyr,1,nages)                 //Population weight-at-age 
   init_matrix  wt_pop_m_in(styr,endyr,1,nages)                 //Population weight-at-age 
   
@@ -354,38 +333,31 @@ DATA_SECTION
     !! for (int j=nages+1; j<=2*nages;j++)
        !!  age_vector(j) = double(j-nages);
 //  init_vector wt_pop(1,nages)                 //Population weight-at-age as a vector for yellowfin sole
-
   !!log_input(wt_pop_f_in);
   !!log_input(wt_pop_m_in);
   init_matrix maturity(styr,endyr,1,nages)               //Maturity-at-age
   !!log_input(maturity);
-
   init_number init_age_comp          //Flag whether initial age comp independent or not (0 = NOT)
   !!cout<<"init_age_comp"<<init_age_comp<<endl;
 //  Index values
-
   int styr_rec
   int k         //Index for survey or fishery
   int i         //Index for year
   int j         //Index for age
   int rec_lag
-
 // Survey environmental covariates for q analysis
   init_ivector n_env_cov(1,nsrv)
   !!log_input(n_env_cov);
   init_3darray env_cov(1,nsrv,1,n_env_cov,1,nyrs_srv)
   !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
 	// env_cov(j,k) /= stdev(env_cov(j,k)); }
-  !!log_input(env_cov);  
-  !!cout<<"env_cov"<<env_cov<<endl; 
-
+  !!log_input(env_cov);
    number    adj_1;
    number    adj_2
    number    SSB_1
    number    SSB_2
  LOCAL_CALCS
   rec_lag=1;    //Lag between year-class and recruitment
-
   if (phase_init_age_comp>0&&init_age_comp > 0)
   {
     styr_rec            = styr ;  // Change in two places (see below)
@@ -397,20 +369,17 @@ DATA_SECTION
     phase_init_age_comp = -2; // Don't estimate initial age comp parameters
   }
  END_CALCS
-
 //Spawning month
   init_number spawnmo          //Mean spawning month    
   !!cout<<"spawnmo"<<spawnmo<<endl;
   number spmo_frac             //Spawning month occurance as a fraction of the year
   !!spmo_frac    =(spawnmo-1)/12.;
   !!log_input(spawnmo);
-
 //Survey month
   init_vector srv_mo(1,nsrv)  //Mean month of survey 
   vector srv_mo_frac(1,nsrv)  //Month survey as a fraction of the year
   !! srv_mo_frac =(srv_mo - 1.) /12.;
   !!log_input(srv_mo);
-
 //Sample size for wts at age 1982-2009, 1-20
   init_matrix n_wts(styr_wt,endyr_wt,1,nages);
   !! log_input(n_wts);
@@ -422,18 +391,14 @@ DATA_SECTION
   !! log_input(Check);
   !! cout << Check << endl;
   !! if (Check != 123456) { cout << "Invalid data file " << Check << endl; exit(1); }
-
 //Projection indices
   int styr_fut                //Start year for projections
   int endyr_fut               //End year for projections
   int num_proj_Fs             // Number of F's to evaluate in future
 	int npfs;
   !! num_proj_Fs = 5;
-
   vector offset_srv(1,nsrv)
   vector offset_fsh(1,nfsh)
-
-
   number R_guess;
  LOCAL_CALCS                     //Offset calculations for later age comp fitting
   offset_fsh.initialize();
@@ -491,11 +456,9 @@ DATA_SECTION
    
    for (int ifsh=1;ifsh<=nfsh;ifsh++)
    {
-
      for (int iyr=1;iyr<=nyrs_fsh_age_s(ifsh);iyr++)
        if (endyr <= yrs_fsh_age_s(ifsh,iyr))
          nyrs_fsh_age_s(ifsh) = min(nyrs_fsh_age_s(ifsh),iyr);
-
      for (int iyr=1;iyr<=nyrs_fsh_age_c(ifsh);iyr++)
        if (endyr <= yrs_fsh_age_c(ifsh,iyr))
          nyrs_fsh_age_c(ifsh) = min(nyrs_fsh_age_c(ifsh),iyr);
@@ -509,19 +472,16 @@ DATA_SECTION
     }
     for (i=1;i<=nyrs_fsh_age_s(k);i++)
     {
-
       oac_fsh_s(k,i) /= sum(oac_fsh_s(k,i));
       offset_fsh(k)  -= nsmpl_fsh_s(k,i)*(oac_fsh_s(k,i) + 0.001) * log(oac_fsh_s(k,i) + 0.001); 
     }
   }
-
   for (int k=1;k<=nsrv;k++)
   {
     for (i=1;i<=nyrs_srv_age_c(k);i++)
     {
       oac_srv_c(k,i) /= sum(oac_srv_c(k,i));
       offset_srv(k)-= nsmpl_srv_c(k,i)*(oac_srv_c(k,i) + 0.001) * log(oac_srv_c(k,i) + 0.001); 
-
     }
     for (int i=1;i<=nyrs_srv_age_s(k);i++)
     {
@@ -531,19 +491,14 @@ DATA_SECTION
   }
   log_input(offset_fsh);
   log_input(offset_srv);
-
  END_CALCS
-
   // This affected retro runs...was set too early...
 	int nyrs_bts_srv                          // NOTE only works for one survey...
 	!! nyrs_bts_srv = nyrs_srv(1);
-
   !!ad_comm::change_datafile_name("future_catch.dat");  
   init_matrix future_ABC(1,nfsh,styr_fut,endyr_fut)
   !! log_input(future_ABC); 
-
 PARAMETER_SECTION
-
   init_vector ln_q_srv(1,nsrv,phase_q)
   init_bounded_number natmort_f(.02,.30,phase_m_f)
   init_bounded_number natmort_m(.02,.30,phase_m_m)
@@ -553,29 +508,23 @@ PARAMETER_SECTION
   init_bounded_number Linf_m(25.,50.,phase_grwth)
   init_bounded_number    K_m(.05,1.0,phase_grwth)
   init_bounded_number   t0_m(-5.,5.0,phase_grwth)
-
   // Baseline incremental growth (to be computed from vbg)
   vector base_incr_f(2,nages);
   vector base_incr_m(2,nages);
   // Incremental growth matrix as deviations from baseline  
-  matrix incr_dev(styr+1,endyr,2,nages)   
-  3darray Mal_gr(1,nsrv,styr,endyr,1,20) //growth matrix with temperature data 
-  3darray Fem_gr(1,nsrv,styr,endyr,1,20) 
+  matrix incr_dev(styr+1,endyr,2,nages)
   // Age-effect (added growth curve goof)
   init_bounded_dev_vector age_incr(5,nages-5,-10,10,phase_age_incr)
   // Year-effect (not related to temperature...)
   init_bounded_dev_vector yr_incr(styr+1,endyr,-10,10,phase_wt)
   // Temperature coeficient (multiplier to temperature time series)
   init_number growth_alpha(phase_growth_cov)
-
   //   linear model paramters to fit temperature to survey catchability
   init_vector q_alpha(1,nsrv,phase_q_alpha)
   init_vector_vector q_beta(1,nsrv,1,n_env_cov,phase_q_beta)
-
   //Recruitment parameters
   init_number mean_log_rec(phase_mn_rec);
   init_bounded_vector rec_dev(styr_rec,endyr,-15,15,phase_rec_dev)
-
   // Added to make initial age comp inconsistent with recruitment estimates
   init_number mean_log_init(phase_init_age_comp); 
   init_bounded_vector init_dev_m(2,nages,-15,15,phase_init_age_comp)
@@ -584,7 +533,6 @@ PARAMETER_SECTION
   number avg_rec_dev
   number sigma_rec
   number var_rec
-
   //Fishing mortality parameters
   init_vector log_avg_fmort(1,nfsh,phase_mn_f)
   init_bounded_matrix fmort_dev(1,nfsh,styr,endyr,-15,15,phase_fmort)
@@ -592,17 +540,13 @@ PARAMETER_SECTION
   number hrate
   number kobs_tot_catch
   number Fnew
-
   //Selectivity parameters
-
   // time invariant selectivity parameters for fishery
   //  init_vector sel_slope_fsh(1,nfsh,phase_logist_sel)
   //  init_vector sel50_fsh(1,nfsh,phase_logist_sel)
   //  init_vector sel_slope_fsh_m(1,nfsh,phase_male_sel)
   //  init_vector     sel50_fsh_m(1,nfsh,phase_male_sel)
-
   //  time-varying selectivity
-
   // fishery females  
   init_vector sel_slope_fsh_f(1,nfsh,phase_logist_sel)
   init_vector sel50_fsh_f(1,nfsh,phase_logist_sel)
@@ -611,25 +555,20 @@ PARAMETER_SECTION
   number slope_tmp
   number sel50_tmp
   // fishery males
-
   init_vector sel_slope_fsh_m(1,nfsh,phase_logist_sel)
   init_bounded_number male_sel_offset(-4,4,phase_male_sel_offset)
   init_bounded_matrix sel_slope_fsh_devs_m(1,nfsh,styr,endyr,-5,5,phase_logist_sel_devs)
   init_vector sel50_fsh_m(1,nfsh,phase_logist_sel)
   init_bounded_matrix sel50_fsh_devs_m(1,nfsh,styr,endyr,-10,10,phase_logist_sel_devs)
-
   // survey selectivity (time invariant)
-
   init_vector sel_slope_srv(1,nsrv,phase_logist_sel)
   init_vector sel50_srv(1,nsrv,phase_logist_sel)
   init_vector sel_slope_srv_m(1,nsrv,phase_male_sel)
   init_vector     sel50_srv_m(1,nsrv,phase_male_sel)
-
   //SPR computation parameters
   init_bounded_vector F40(1,nfsh,0.01,10.,phase_F40)
   init_bounded_vector F35(1,nfsh,0.01,10.,phase_F40)
   init_bounded_vector F30(1,nfsh,0.01,10.,phase_F40)
-
   // Spawner-recruit parameters and associated definitions
   init_number R_logalpha(phase_sr)      // log of Ricker alpha
   init_number R_logbeta(phase_sr+1)      // log of Ricker beta
@@ -640,7 +579,6 @@ PARAMETER_SECTION
   vector SRR_SSB(0,30)
   sdreport_vector rechat(0,30)
   sdreport_vector pred_rec(styr,endyr);
-
   // Weights-at-age definitions (formerly in Data section)
   3darray   wt_fsh(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
   3darray wt_fsh_f(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
@@ -660,16 +598,13 @@ PARAMETER_SECTION
   init_vector wt_pop_fut_m(1,nages,phase_wtfmsy)
   number R_beta                             // Ricker beta 
   number phizero                            // SPR at F=0
-
   //Defining more matrices and vectors
   3darray log_sel_fsh_f(1,nfsh,styr,endyr,1,nages)
   3darray log_sel_fsh_m(1,nfsh,styr,endyr,1,nages)
   3darray sel_fsh_f(1,nfsh,styr,endyr,1,nages)
   3darray sel_fsh_m(1,nfsh,styr,endyr,1,nages)
-
   matrix log_sel_srv_f(1,nsrv,1,nages)
   matrix log_sel_srv_m(1,nsrv,1,nages)
-
   init_vector log_msy_sel_f(1,nages,phase_proj) // new partial fishing mortality (==selectivity) for use in Fmsy calcs
   init_vector log_msy_sel_m(1,nages,phase_proj) // new partial fishing mortality (==selectivity) for use in Fmsy calcs
   vector      partial_F_f(1,nages)      // new partial fishing mortality (==selectivity) for use in Fmsy calcs
@@ -678,21 +613,15 @@ PARAMETER_SECTION
   matrix sel_srv_m(1,nsrv,1,nages)
   matrix pred_srv(1,nsrv,styr,endyr)
   // matrix    q_srv(1,nsrv,styr,endyr)
-
   3darray eac_fsh_c(1,nfsh,1,nyrs_fsh_age_c,1,nages)
   3darray eac_srv_c(1,nsrv,1,nyrs_srv_age_c,1,nages)
-
   3darray eac_fsh_s(1,nfsh,1,nyrs_fsh_age_s,1,2*nages)
   3darray eac_srv_s(1,nsrv,1,nyrs_srv_age_s,1,2*nages)
-
   matrix pred_catch(1,nfsh,styr,endyr)
-
   matrix natage_f(styr,endyr,1,nages)
   matrix natage_m(styr,endyr,1,nages)
-
   3darray catage_f(1,nfsh,styr,endyr,1,nages)
   3darray catage_m(1,nfsh,styr,endyr,1,nages)
-
   matrix Z_m(styr,endyr,1,nages)
   matrix Z_f(styr,endyr,1,nages)
   3darray F_m(1,nfsh,styr,endyr,1,nages)
@@ -702,7 +631,6 @@ PARAMETER_SECTION
   matrix S_f(styr,endyr,1,nages)
   number surv_f
   number surv_m
-
   sdreport_vector SSB(styr,endyr)
   sdreport_vector    q_srv(1,nyrs_bts_srv) // NOTE one survey for sdreport plotting only...
   // vector pred_rec(styr,endyr)
@@ -724,7 +652,6 @@ PARAMETER_SECTION
   number fpen
   objective_function_value obj_fun
   vector srv_like(1,nsrv)
-
   //Definitions for SPR and future yield projections
   number SPR_ABC // (0.05,2.,phase_F40)
   number SPR_OFL // (0.05,2.,phase_F40)
@@ -736,22 +663,18 @@ PARAMETER_SECTION
   number SBF30
   number sprpen
   vector Fratio(1,nfsh)
-
   matrix Nspr(1,4,1,nages)
-
   matrix nage_future_f(styr_fut,endyr_fut,1,nages)
   matrix nage_future_m(styr_fut,endyr_fut,1,nages)
   init_vector rec_dev_future(styr_fut,endyr_fut,phase_proj)
   vector SSB_future(styr_fut,endyr_fut)
   vector TotBiom_future(styr_fut,endyr_fut)
-
   3darray F_future_f(1,nfsh,styr_fut,endyr_fut,1,nages)
   3darray F_future_m(1,nfsh,styr_fut,endyr_fut,1,nages)
   matrix Z_future_f(styr_fut,endyr_fut,1,nages)
   matrix Z_future_m(styr_fut,endyr_fut,1,nages)
   matrix S_future_f(styr_fut,endyr_fut,1,nages)
   matrix S_future_m(styr_fut,endyr_fut,1,nages)
-
   matrix catage_future_f(styr_fut,endyr_fut,1,nages)
   matrix catage_future_m(styr_fut,endyr_fut,1,nages)
   number avg_rec_dev_future
@@ -760,22 +683,18 @@ PARAMETER_SECTION
   // matrix nage_future(styr_fut,endyr_fut,1,nages)
   // init_vector rec_dev_future(styr_fut,endyr_fut,phase_proj);
   // vector Sp_Biom_future(styr_fut-rec_age,endyr_fut);
-
   // 3darray F_future(1,nfsh,styr_fut,endyr_fut,1,nages);
   // matrix Z_future(styr_fut,endyr_fut,1,nages);
   // matrix S_future(styr_fut,endyr_fut,1,nages);
   // matrix catage_future(styr_fut,endyr_fut,1,nages);
   // number avg_rec_dev_future
   // vector avg_F_future(1,5)
-
-
   //sdreport_vector C_age(1,nages)
   sdreport_number msy
   sdreport_number Fmsy
   sdreport_number logFmsy
   sdreport_number Fmsyr
   sdreport_number logFmsyr
-
   sdreport_vector ABC_biom(styr_fut,endyr_fut)
   sdreport_number Bmsy
   sdreport_number Bmsyr
@@ -788,7 +707,6 @@ PARAMETER_SECTION
   sdreport_vector future_Fs(styr_fut,endyr_fut)
   sdreport_matrix future_SSB(1,num_proj_Fs,styr_fut,endyr_fut)
   sdreport_matrix future_TotBiom(1,num_proj_Fs,styr_fut,endyr_fut)
-
 PRELIMINARY_CALCS_SECTION
   // Initialize matrices used in the model
   // exit(1);
@@ -814,7 +732,6 @@ PRELIMINARY_CALCS_SECTION
       //note, only uses fishery 1 for this... needs to be updated for more than 1 fishery
       wt_fsh_tmp_f(j,i) = wt_fsh_f_in(1,i,j);
       wt_fsh_tmp_m(j,i) = wt_fsh_m_in(1,i,j);
-
       wt_pop_tmp_f(j,i) = value(wt_pop_f(i,j));//note, only uses fishery 1 for this... needs to be updated for more than 1 fishery
       wt_pop_tmp_m(j,i) = value(wt_pop_m(i,j));//note, only uses fishery 1 for this... needs to be updated for more than 1 fishery
 		}
@@ -831,7 +748,6 @@ PRELIMINARY_CALCS_SECTION
     wt_fsh_sigma_m(j) = sqrt(norm2(wt_fsh_tmp_m(j)-wt_fsh_mn_m(j))/(endyr_wt-styr_wt+1) );
     wt_pop_sigma_f(j) = sqrt(norm2(wt_pop_tmp_f(j)-wt_pop_mn_f(j))/(endyr_wt-styr_wt+1) );
     wt_pop_sigma_m(j) = sqrt(norm2(wt_pop_tmp_m(j)-wt_pop_mn_m(j))/(endyr_wt-styr_wt+1) );
-
     //check for zero values or no variance 
     if (wt_pop_mn_f(j)==0.)
     {
@@ -854,7 +770,6 @@ PRELIMINARY_CALCS_SECTION
       wt_fsh_sigma_m(j)=.03*wt_fsh_mn_m(j);
     }
   }
-
   adj_1=1.0;
   adj_2=1.0; 
   SSB_1=1.0;
@@ -879,13 +794,8 @@ PRELIMINARY_CALCS_SECTION
       wt_vbg_m(j) = value(a_lw_m * pow(Linf_m*(1.-exp(-K_m*(double(j)-t0_m))),b_lw_m));
   }
   base_incr_f(2,nages) = wt_vbg_f(2,nages) - ++wt_vbg_f(1,nages-1);
-  base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1); 
-  //cout <<"wt_vbg_f"<<endl<<wt_vbg_f<<endl;
-  //cout <<"wt_vbg_f(1,nages-1)"<<endl<<wt_vbg_f(1,nages-1)<<endl;
-  //cout <<"wt_vbg_f(2,nages)"<<endl<<wt_vbg_f(2,nages)<<endl;
-  //cout <<"base_incr_f"<<endl<<base_incr_f<<endl;
-  //cout <<"base_incr_m"<<endl<<base_incr_m<<endl; 
-  //exit(1);
+  base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1);
+  // cout <<base_incr_f<<endl<<base_incr_m<<endl;exit(1);
   switch (Growth_Option)
   {
     case 0 : // Use constant time-invariant growth (from base growth parameters)
@@ -937,122 +847,26 @@ PRELIMINARY_CALCS_SECTION
     }
     break;
     case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and
-             // set up a matrix of estimated sizes Mal_gr and Fem_gr
-    {     
-	for (i=styr;i<=1981;i++) 
-	  {
-	  Mal_gr(1,i)=wt_vbg_m;
-	  Fem_gr(1,i)=wt_vbg_f;   
-	  } 
-	for (i=1982;i<=endyr;i++)    //fill in average weight at age one 
-	 {    
-       Mal_gr(1,i,1)=wt_vbg_m(1);
-       Fem_gr(1,i,1)=wt_vbg_f(1);
-	 }        
-
-	  	for (i=1981;i<=2018;i++)      //indexed 1 above so this is through 2019
-	{                             //for males ages 2-12 add temperature effect to growth 
-		for (j = 2; j<=12; j++)
-		{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+.69*env_cov(1,1,i-1980)-.069*env_cov(1,1,i-1980)*env_cov(1,1,i-1980);  
-		}  
-		for (j =13;j<=nages;j++)      //ages 13 and older use average values
-		{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j);  
-		  //base_incr_m(2,nages) = wt_vbg_m(2,nages) - ++wt_vbg_m(1,nages-1);
-		}
-		for (j = 2; j<=13; j++)
-		{
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+.24*env_cov(1,1,i-1980);  
-		}  
-		for (j =14;j<=nages;j++)      //ages 14 and older use average values
-		{
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j);  
-		}
-
-	}
-      	for (i=2019;i<=2019;i++)       //This is 2020; in 2020 no survey or temperature so just use average growth - maybe get estimate later.  This is
+             // decomposed by year and age
     {
-    	for (j = 2; j<=nages; j++)
-    	{
-		  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j);  
-		  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j);  
-    	}
-   
-    }  
-      	for (i=2020;i<=2020;i++)      //indexed 1 above so this is through 2021
-    {
-    	  cout<<i<<endl; 
-    	for (j = 2; j<=12; j++)
-    	{
-    	  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j)+.69*env_cov(1,1,i-1981)-.069*env_cov(1,1,i-1981)*env_cov(1,1,i-1981);  
-    	}  
-    	for (j =13;j<=nages;j++)  
-    	{
-    	  Mal_gr(1,i+1,j)=Mal_gr(1,i,j-1)+base_incr_m(j);  
-    	} 
-    	for (j = 2; j<=13; j++)
-    	{
-    	  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j)+.24*env_cov(1,1,i-1981);  
-    	}  
-    	for (j =14;j<=nages;j++)  
-    	{
-    	  Fem_gr(1,i+1,j)=Fem_gr(1,i,j-1)+base_incr_f(j);  
-    	}     
-//translate into wt_pop_f
-        for (i=styr;i<=endyr;i++)
-        {
-          wt_pop_f(i) = Fem_gr(1,i);
-          wt_pop_m(i) = Mal_gr(1,i);
-        }
-
-    wt_srv_f=Fem_gr;
-    wt_srv_m=Mal_gr;
-	wt_fsh_f=Fem_gr;
-    wt_fsh_m=Mal_gr;
-    
     }
-
- 
-  //cout<<"env_cov(1,1,1)"<<env_cov(1,1,1)<<endl;
-  //cout<<"base_incr_f"<<base_incr_f<<endl;
-  //cout<<"nyrs_srv"<<nyrs_srv<<endl; 
-  //cout<<"wt_srv_f"<<wt_srv_f<<endl;  
-  //cout<<"wt_srv_m"<<wt_srv_m<<endl; 
-  //cout<<"wt_pop_f"<<wt_pop_f<<endl;  
-  //cout<<"wt_pop_m"<<wt_pop_m<<endl;
-  //cout<<"wt_fsh_f"<<wt_fsh_f<<endl;  
-  //cout<<"wt_fsh_m"<<wt_fsh_m<<endl;
-  //cout<<"Mal_gr"<<Mal_gr<<endl;
-  //cout<<"Mal_gr(2020,3)"<<Mal_gr(2020,3)<<endl;
-  //cout<<"Mal_gr(2021,3)"<<Mal_gr(2021,3)<<endl; 
-  //cout<<"base_incr_m"<<base_incr_m<<endl; 
-  //cout<<"wt_vbg_m"<<wt_vbg_m<<endl;   
-    }   
-
-
     break;
-  }    
-
+  }
   log_input(wt_fsh_f);
   log_input(wt_fsh_m);
   log_input(wt_srv_f);
   log_input(wt_srv_m);
   log_input(wt_pop_f);
   log_input(wt_pop_m);
-
-
 INITIALIZATION_SECTION
   // yellowfin sole males  n=656 name value std dev
-  Linf_m 36.0729742 //      updated 4/2022 See code_to_setup_YFSinputfile2022.R
-  K_m 0.1389764     // 
-  t0_m 0.3570081    // 
-
+  Linf_m 34.030 // 0.149
+  K_m 0.161     // 0.004
+  t0_m 0.515    // 0.096
   // yellowfin sole females  n=709 
-  Linf_f 40.4644535 // 
-  K_f 0.1263367     // 
-  t0_f 0.5942688    // 
-
+  Linf_f 38.034 // 0.152
+  K_f 0.137     // 0.003
+  t0_f 0.297    // 0.009
   wt_fsh_fut_f .8;
   wt_fsh_fut_m .8;
   wt_pop_fut_f .8;
@@ -1080,13 +894,7 @@ INITIALIZATION_SECTION
   F30 .21
   growth_alpha .38
   
-PROCEDURE_SECTION 
-
-
-  //cout<<"incr_dev"<<incr_dev<<endl;
-  //cout<<"growth_alpha"<<growth_alpha<<endl;
-  //cout<<"growth_cov"<<growth_cov<<endl;  
-  //exit(1);
+PROCEDURE_SECTION
   // if (Growth_Option>1&&(current_phase()<=1))
   if (Growth_Option>1 && (last_phase()||current_phase()<=phase_wt))
     Get_wt_age();
@@ -1112,9 +920,7 @@ PROCEDURE_SECTION
     }
     catch_at_age();
   }
-
   evaluate_the_objective_function();
-
   // next part returns the Byesian posterior for the listed parameters
   if (mceval_phase())
   {
@@ -1163,10 +969,9 @@ PROCEDURE_SECTION
 			mean_N_srv_age /= double(nyrs_srv_age_c(k) + nyrs_srv_age_s(k));
     }
     evalout << " " <<mean_N_srv_age;
-  } 
 	// Alpha and beta of SRR
-  evalout << " " <<R_alpha<<" "<<R_beta<<endl;
-
+    evalout << " " <<R_alpha<<" "<<R_beta<<endl;
+  } 
 FUNCTION get_selectivity
   //Logistic selectivity is modeled for the fishery and survey, by age
   if (active(sel_slope_fsh_f))
@@ -1210,12 +1015,10 @@ FUNCTION get_selectivity
         }
       }
     }
-
     for (k=1;k<=nsrv;k++)
     {
       log_sel_srv_f(k)(1,nselages) = -log( 1.0 + mfexp(-1.*sel_slope_srv(k) * (age_vector(1,nselages) - sel50_srv(k)) ));
       log_sel_srv_f(k)(nselages,nages) = log_sel_srv_f(k,nselages);
-
       dvariable slope_tmp = sel_slope_srv(k) * mfexp(sel_slope_srv_m(k));
       dvariable sel50_tmp = sel50_srv(k)     * mfexp(sel50_srv_m(k));
       log_sel_srv_m(k)(1,nselages) = -log( 1.0 + mfexp(-slope_tmp * (age_vector(1,nselages) - sel50_tmp) ));
@@ -1228,10 +1031,8 @@ FUNCTION get_selectivity
   sel_fsh_m   = mfexp(log_sel_fsh_m);
   if (active(male_sel_offset)) 
     sel_fsh_m   = mfexp(log_sel_fsh_m+male_sel_offset);
-
   partial_F_f = mfexp(log_msy_sel_f);
   partial_F_m = mfexp(log_msy_sel_m);
-
 FUNCTION get_mortality
   Z_f.initialize();
   Z_m.initialize();
@@ -1260,7 +1061,6 @@ FUNCTION get_mortality
   }
   S_f = mfexp(-Z_f);
   S_m = mfexp(-Z_m);
-
 FUNCTION get_numbers_at_age
   //Initial age composition
   // Initial age comp independent from recruitment...
@@ -1286,16 +1086,13 @@ FUNCTION get_numbers_at_age
     natage_f(styr,nages) = 0.5*mfexp(mean_log_rec+rec_dev(itmp) - natmort_f*(nages-1))/(1.-surv_f);
     natage_m(styr,nages) = 0.5*mfexp(mean_log_rec+rec_dev(itmp) - natmort_m*(nages-1))/(1.-surv_m);
   }
-
   //Recruitment in subsequent years
   for (i=styr;i<=endyr;i++)
   {
     natage_m(i,1) = 0.5*mfexp(mean_log_rec+rec_dev(i));
     natage_f(i,1) = natage_m(i,1);
   }
-
   pred_rec(styr) = 2.*natage_m(styr,1);
-
   //Fill in the rest of the matrix of numbers at age by applying F's
   for (i=styr;i<endyr;i++)
   {
@@ -1303,12 +1100,9 @@ FUNCTION get_numbers_at_age
     natage_m(i+1,nages)  +=  natage_m(i,nages)*S_m(i,nages);
     natage_f(i+1)(2,nages)= ++elem_prod(natage_f(i)(1,nages-1),S_f(i)(1,nages-1));
     natage_f(i+1,nages)  +=  natage_f(i,nages)*S_f(i,nages);
-
     TotBiom(i)=natage_f(i)*wt_pop_f(i) + natage_m(i)*wt_pop_m(i);
-
     SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i),spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
 		if (SSB(i)<0) cout <<i<<" "<<wt_pop_f(i)(1,5)<<" "<< maturity(i)(4,7) <<" "<< spmo_frac << endl;
-
     // SSB_1         = value(elem_prod(elem_prod(Ntmp,pow(Stmp,spmo_frac)),maturity)*wt_pop_fut);
     pred_rec(i+1) = 2.*natage_f(i+1,1);
   }
@@ -1320,7 +1114,6 @@ FUNCTION get_numbers_at_age
     depletion = TotBiom(endyr)/TotBiom(styr);
     endbiom=TotBiom(endyr);
   }
-
   //Survey computations
   for (k=1;k<=nsrv;k++)
   {
@@ -1329,7 +1122,6 @@ FUNCTION get_numbers_at_age
       int srvyrtmp = yrs_srv(k,i);
       dvariable b1tmp = elem_prod(natage_f(srvyrtmp),exp( -Z_f(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_f(k),wt_srv_f(k,srvyrtmp));
       b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
-
 		  // if (last_phase() ) 
 		  //cout<<" "<<q_beta(1)<<" "<<q_srv(i)<<endl;
       if (active(q_beta(1))) 
@@ -1357,11 +1149,9 @@ FUNCTION get_numbers_at_age
       // eac_srv_s(k,i)(nages+1,2*nages)  = elem_prod(sel_srv(k),natage_m(yrtmp)).shift(nages+1);
       for (j=1;j<=nages;j++)
         eac_srv_s(k,i,j+nages) = sel_srv_m(k,j) * natage_m(yrtmp,j);
-
       eac_srv_s(k,i)/= sum(eac_srv_s(k,i));
      }
    }
-
 FUNCTION catch_at_age
   catage_f.initialize();
   catage_m.initialize();
@@ -1393,7 +1183,6 @@ FUNCTION catch_at_age
       eac_fsh_s(k,i) /= sum(eac_fsh_s(k,i));
     }
   }
-
 FUNCTION evaluate_the_objective_function
   if (active(F40))
   {
@@ -1404,7 +1193,6 @@ FUNCTION evaluate_the_objective_function
     incr_dev_tmp(5,nages-5)     = growth_alpha * 2.0 + age_incr;
     incr_dev_tmp(nages-4,nages) = incr_dev_tmp(nages-5) ;
     incr_dev_tmp(2,4)           = incr_dev_tmp(5) ;
-
     wt_pop_fut_f(1)        = wt_vbg_f(1);
     wt_pop_fut_m(1)        = wt_vbg_m(1);
     wt_pop_fut_f(2,nages)  = ++wt_vbg_f(1,nages-1) + elem_prod(base_incr_f,mfexp(incr_dev_tmp)) ; // initializes estimates to correct values...
@@ -1429,12 +1217,10 @@ FUNCTION evaluate_the_objective_function
     }
     // wt_like(1) += 50.*norm2(log(wt_pred_f + .01) - log(wt_obs_f + .01)); // matrices for the period of wt-age data (modify to use sample size)
     // wt_like(1) += 50.*norm2(log(wt_pred_m + .01) - log(wt_obs_m + .01)); // matrices for the period of wt-age data (modify to use sample size)
-
     // obj_fun += 50.*norm2(incr_dev);
     if(active(age_incr))
       wt_like(2) += 12.5 * norm2(first_difference(first_difference(age_incr)));
       // wt_like(2) += 12.5 * norm2(age_incr);
-
     if(active(yr_incr))
       wt_like(3) += 12.5 * norm2(yr_incr);
     // cout<<"ObjFunWt: "<< norm2(log(wt_pred_m) - log(wt_obs_m))<< endl;; // matrices for the period of wt-age data (modify to use sample size)
@@ -1507,19 +1293,15 @@ FUNCTION evaluate_the_objective_function
     {
       dvariable res = wt_fsh_mn_f(j)-wt_fsh_fut_f(j);
       wt_fut_like += res*res / (2.*wt_fsh_sigma_f(j)*wt_fsh_sigma_f(j));
-
       res           = wt_fsh_mn_m(j)-wt_fsh_fut_m(j);
       wt_fut_like += res*res / (2.*wt_fsh_sigma_m(j)*wt_fsh_sigma_m(j));
-
       res = wt_pop_mn_f(j)-wt_pop_fut_f(j);
       wt_fut_like += res*res / (2.*wt_pop_sigma_f(j)*wt_pop_sigma_f(j));
-
       res = wt_pop_mn_m(j)-wt_pop_fut_m(j);
       wt_fut_like += res*res / (2.*wt_pop_sigma_m(j)*wt_pop_sigma_m(j));
     }
 		obj_fun += wt_fut_like;
   }
-
   if(active(log_msy_sel_f)) 
   {
 	  wt_msy_like=0.;
@@ -1538,7 +1320,6 @@ FUNCTION evaluate_the_objective_function
     wt_msy_like += 0.5*norm2(log_sel_mean - log_msy_sel_m)/(pf_sigma*pf_sigma);
 		obj_fun += wt_msy_like;
   }
-
   // small penalty to initialize stock to have similar values (unless data suggest otherwise)
   if(active(init_dev_m))
 	{
@@ -1546,7 +1327,6 @@ FUNCTION evaluate_the_objective_function
 		obj_fun += init_like;
   }
   }
-
 FUNCTION Fmort_Pen
 //Phases less than 3, penalize high F values
   if (current_phase()<3)
@@ -1554,7 +1334,6 @@ FUNCTION Fmort_Pen
   else
      fpen += .01*norm2(Fmort - .2);
   fpen += 100.*square(mean(fmort_dev));
-
 FUNCTION Srv_Like
 //Fit to trawl survey assuming the lognormal distribution
   srv_like.initialize();
@@ -1571,7 +1350,6 @@ FUNCTION Srv_Like
     }
   }
   obj_fun += sum(srv_like);
-
 FUNCTION Age_Like
 //Fit to fishery and survey age compositions assuming the multinomial distribution
   age_like_fsh.initialize();
@@ -1579,13 +1357,11 @@ FUNCTION Age_Like
   {
       for (i=1;i<=nyrs_fsh_age_c(k);i++)
          age_like_fsh(k) -= nsmpl_fsh_c(k,i)*(oac_fsh_c(k,i) + 0.001) * log(eac_fsh_c(k,i) + 0.001);
-
       for (i=1;i<=nyrs_fsh_age_s(k);i++)
          age_like_fsh(k) -= nsmpl_fsh_s(k,i)*(oac_fsh_s(k,i) + 0.001) * log(eac_fsh_s(k,i) + 0.001);
   }
   age_like_fsh-=offset_fsh;
   obj_fun += sum(age_like_fsh);
-
   age_like_srv.initialize();
   for (k=1;k<=nsrv;k++)
   {
@@ -1596,7 +1372,6 @@ FUNCTION Age_Like
   }
   age_like_srv-=offset_srv;
   obj_fun += sum(age_like_srv);
-
 FUNCTION dvariable spr_ratio(dvariable trial_F,dvar_vector& sel)
   dvariable SBtmp;
   dvar_vector Ntmp(1,nages);
@@ -1619,12 +1394,10 @@ FUNCTION dvariable spr_ratio(dvariable trial_F,dvar_vector& sel)
     SBtmp  += Ntmp(j)*maturity(endyr,j)*wttmp(j)*pow(srvtmp(j),spmo_frac);
   }
   Ntmp(nages)=Ntmp(nages-1)*srvtmp(nages-1)/(1.-srvtmp(nages));
-
   SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages),spmo_frac);
   // cout<<sel_tmp<<endl<< " Trial: "<<trial_F<<" "<<SBtmp<<" Phizero "<<phizero<<endl;
   phizero=get_spr(0.0);
   return(get_spr(trial_F)/phizero);
-
 FUNCTION compute_spr_rates
 //Compute SPR rates and add them to the likelihood for females
   SB0=0.;
@@ -1634,7 +1407,6 @@ FUNCTION compute_spr_rates
 //Fill in the number of SSB matrix
   for (i=1;i<=4;i++)
     Nspr(i,1)=1.;
-
 //A temporary transposed matrix is made for selectivity for matrix multiplication reasons
   // dvar_matrix sel_tmp(sel_fsh_f(1).colmin(),sel_fsh_f(1).colmax(),sel_fsh_f(1).rowmin(),sel_fsh_f(1).rowmax());
   // sel_tmp = trans(sel_fsh_f(1));
@@ -1644,7 +1416,6 @@ FUNCTION compute_spr_rates
     sel_tmpu(k) = sel_fsh_f(k,endyr);
   sel_tmp = trans(sel_tmpu);
 	// cout <<sel_tmp << endl;exit(1);
-
   for (j=2;j<nages;j++)
   {
     Nspr(1,j) = Nspr(1,j-1)*exp(-natmort_f);
@@ -1657,7 +1428,6 @@ FUNCTION compute_spr_rates
   Nspr(2,nages)=Nspr(2,nages-1)*exp(-(natmort_f+F40*sel_tmp(nages-1)))/(1.-exp(-(natmort_f+F40*sel_tmp(nages))));
   Nspr(3,nages)=Nspr(3,nages-1)*exp(-(natmort_f+F35*sel_tmp(nages-1)))/(1.-exp(-(natmort_f+F35*sel_tmp(nages))));
   Nspr(4,nages)=Nspr(4,nages-1)*exp(-(natmort_f+F30*sel_tmp(nages-1)))/(1.-exp(-(natmort_f+F30*sel_tmp(nages))));
-
   for (j=1;j<=nages;j++)
   {
 //Kill them off until they spawn (spmo_frac), 0.5*Nspr is for females only
@@ -1669,9 +1439,7 @@ FUNCTION compute_spr_rates
   sprpen   =10.*square(SBF40-0.4*SB0);
   sprpen  +=10.*square(SBF35-0.35*SB0);
   sprpen  +=10.*square(SBF30-0.3*SB0);
-
 	// cout <<sprpen<<" "<<SB0<<" "<< SBF40<<" "<< SBF30<<" "<<endl;
-
 FUNCTION compute_sr_fit
   // sigmaR = 0.6;
   R_alpha=mfexp(R_logalpha);
@@ -1702,7 +1470,6 @@ FUNCTION dvariable SRecruit(const dvariable& Stmp)
 	*/
   RETURN_ARRAYS_DECREMENT();
   return RecTmp;
-
 FUNCTION dvariable get_yield(const dvariable& Ftmp)      // calculates yield for any value of F 
   dvariable phi;  
   dvariable ypr;
@@ -1713,7 +1480,6 @@ FUNCTION dvariable get_yield(const dvariable& Ftmp)      // calculates yield for
   ypr  = get_ypr(Ftmp);
   yield=R_eq*ypr;
   return(yield);
-
 FUNCTION dvariable get_spr(dvariable Ftemp)    // calculation of equilibrium SPR for Fmsy determination
   dvariable phi;
   dvar_vector sel_tmp(1,nages);
@@ -1758,7 +1524,6 @@ FUNCTION dvariable get_ypr(dvariable Ftemp)    // calculation of equilibrium YPR
    ypr  = elem_div(Ftemp*sel_tmp_f,Ftemp*sel_tmp_f+natmort_f)*elem_prod(elem_prod(Ntmp_f,wt_fsh_fut_f),(1-exp(-(natmort_f+Ftemp*sel_tmp_f))));
    ypr += elem_div(Ftemp*sel_tmp_m,Ftemp*sel_tmp_m+natmort_m)*elem_prod(elem_prod(Ntmp_m,wt_fsh_fut_m),(1-exp(-(natmort_m+Ftemp*sel_tmp_m))));
    return(ypr);
-
 FUNCTION dvariable get_biom_per_rec(dvariable Ftemp)    
  // calculation of equilibrium biomass for geometric mean calc determination
   dvariable bpr;
@@ -1780,7 +1545,6 @@ FUNCTION dvariable get_biom_per_rec(dvariable Ftemp)
    bpr  = Ntmp_f(ABC_age_lb,nages)*wt_pop_fut_f(ABC_age_lb,nages); 
    bpr += Ntmp_m(ABC_age_lb,nages)*wt_pop_fut_m(ABC_age_lb,nages); 
    return(bpr);
-
 FUNCTION get_msy
 //  loop which finds Fmsy by trying different values on the yield curve
     double d;
@@ -1815,16 +1579,13 @@ FUNCTION get_msy
     msy     = get_yield(Fmsy);
     logFmsy = log(Fmsy);
     Bmsy    = R_eq*phi;
-
     SPR_OFL = spr_ratio(Fmsy,partial_F_f);
     Bmsyr   = R_eq*get_biom_per_rec(Fmsy)    ;
     Fmsyr   = msy/Bmsyr;
     logFmsyr= log(Fmsyr);
-
 FUNCTION Future_projections
 //Future SSB set equal to estimated SSB with a recruitment lag
 //SSB_future(styr_fut-rec_lag,styr_fut-1) = SSB(endyr-rec_lag+1,endyr);
-
 //Start calculation for first year of numbers at age matrix in the projection
   nage_future_f(styr_fut)(2,nages) = ++elem_prod(natage_f(endyr)(1,nages-1),S_f(endyr)(1,nages-1));
   nage_future_f(styr_fut,nages)   += natage_f(endyr,nages)*S_f(endyr,nages);
@@ -1871,7 +1632,7 @@ FUNCTION Future_projections
          // future_spr0(i) = get_spr(0.);
        }
        // Set growth if temperature related
-       if (Growth_Option==2)
+       if (Growth_Option==3)
        {
          dvar_vector incr_dev_tmp(2,nages);
          incr_dev_tmp(5,nages-5)     = growth_alpha * fut_temp(i-endyr) ;
@@ -1901,7 +1662,6 @@ FUNCTION Future_projections
   //Mean average recruitment of the time-series is used for the projection
     //NOTE spawningbiomass is beginyear, NOT spawnmonth xxx
   dvariable Rectmp=mfexp(mean_log_rec);
-
   for (i=styr_fut;i<=endyr_fut;i++)
   {
 		// cout<<"Future rec, 3-yr avg: "<<i<<" "<<Rectmp<< " "<< .5*mean(pred_rec(endyr-3,endyr))<< endl;
@@ -1940,31 +1700,25 @@ FUNCTION Future_projections
     nage_future_f(endyr_fut,1) = .5*Rectmp*mfexp(rec_dev_future(endyr_fut));
     nage_future_m(endyr_fut,1) = nage_future_f(endyr_fut,1) ;
   }
-
   SSB_future(endyr_fut) = elem_prod(nage_future_f(endyr_fut),pow(S_future_f(endyr_fut),spmo_frac)) * elem_prod(wt_pop_fut_f,maturity(endyr));  //need to add recruitment lag
   TotBiom_future(endyr_fut)  = nage_future_f(endyr_fut)*wt_pop_fut_f;
   TotBiom_future(endyr_fut) += nage_future_m(endyr_fut)*wt_pop_fut_m;
-
   //Calculations of catch at predicted future age composition
   for (i=styr_fut;i<=endyr_fut;i++)
   {
     catage_future_f(i) = 0.;
     catage_future_m(i) = 0.;
-
     for (k=1;k<=nfsh;k++)
     {
       catage_future_f(i) += elem_prod(nage_future_f(i), elem_prod(F_future_f(k,i), elem_div( (1.-S_future_f(i) ),Z_future_f(i))));
       catage_future_m(i) += elem_prod(nage_future_m(i), elem_prod(F_future_m(k,i), elem_div( (1.-S_future_m(i) ),Z_future_m(i))));
     }
-
     if (m<=npfs)  // catch biomass in future
       future_catch(m,i)  += catage_future_f(i)*wt_fsh_fut_f + catage_future_m(i)*wt_fsh_fut_m      ;
-
     future_SSB(m,i) = SSB_future(i);
     future_TotBiom(m,i) = TotBiom_future(i);
    }
   }   //End of loop over F's
-
 FUNCTION write_srec
   dvariable phi;  
   phizero=get_spr(0.0);
@@ -1989,12 +1743,11 @@ FUNCTION write_srec
   R_report << R_beta <<endl;
   R_report << "sigmaR" <<endl;
   R_report << sigmaR    <<endl;
-
+  
 FUNCTION compute_spr_rates_2
   //Compute SPR Rates 
   F35 = get_spr_rates(.35);
   F40 = get_spr_rates(.40);
-
 FUNCTION dvariable get_spr_rates(double spr_percent)
   RETURN_ARRAYS_INCREMENT();
   double df=1.e-3;
@@ -2022,7 +1775,6 @@ FUNCTION dvariable get_spr_rates(double spr_percent)
   }
   RETURN_ARRAYS_DECREMENT();
   return(F1);
-
 FUNCTION dvariable spr_ratio(dvariable trial_F)
   RETURN_ARRAYS_INCREMENT();
   dvariable SBtmp;
@@ -2045,11 +1797,9 @@ FUNCTION dvariable spr_ratio(dvariable trial_F)
    // !!spmo_frac    =(spawnmo-1)/12.;
   }
   Ntmp(nages)=Ntmp(nages-1)*srvtmp(nages-1)/(1.-srvtmp(nages));
-
   SBtmp  += Ntmp(nages)*maturity(endyr,nages)*wttmp(nages)*pow(srvtmp(nages),spmo_frac);
   RETURN_ARRAYS_DECREMENT();
   return(SBtmp/phizero);
-
 REPORT_SECTION
   save_gradients(gradients);
   dvar_vector wt_pop_tmp_f(1,nages);
@@ -2074,7 +1824,6 @@ REPORT_SECTION
 	nLogPosterior(ilike) = sigmaR_prior; ilike++;
 	nLogPosterior(ilike) = m_prior     ; ilike++;
 	nLogPosterior(ilike) = fpen       ; ilike++;
-
   for (int i=0;i<=3;i++)
     {
       dvar_vector incr_dev_tmp(2,nages);
@@ -2118,12 +1867,10 @@ REPORT_SECTION
   report << "Estimated_numbers_of_fish year "<<age_vector << endl;
    for (i=styr;i<=endyr;i++)
      report << " "<<  i << ", "<< natage_f(i) << natage_m(i)<<endl;
-
   report << endl<< "Estimated_F_mortality Fishery Year " << age_vector<< endl;
    for (k=1;k<=nfsh;k++)
      for (i=styr;i<=endyr;i++)
        report << " "<< k <<" "<< i << " "<<F_f(k,i) << " " << F_m(k,i)<<endl;
-
    report << endl << "Observed survey values " << endl;
    for (k=1;k<=nsrv;k++)
    {
@@ -2142,7 +1889,6 @@ REPORT_SECTION
        }
      }
   }
-
   report << endl<< "Observed_proportion "<<endl;
   for (k=1;k<=nfsh;k++)
   {
@@ -2194,7 +1940,6 @@ REPORT_SECTION
              <<endl;
     }
   }
-
   report << endl << "Predicted_prop_Fishery "<<endl;
   for (k=1;k<=nfsh;k++)
   {
@@ -2204,7 +1949,6 @@ REPORT_SECTION
     for (i=1;i<=nyrs_fsh_age_s(k);i++)
       report << yrs_fsh_age_s(k,i)<< ", " << eac_fsh_s(k,i) << ", Female/Total: "<< sum(eac_fsh_s(k,i)(1,nages)) << endl; 
   }
-
   report << endl<< "Observed_prop_Survey "<<endl;
   for (k=1;k<=nsrv;k++)
   {
@@ -2242,7 +1986,6 @@ REPORT_SECTION
         R_report <<endl;
       }
     }
-
     L_report << "Obs_Survey_age_comp "<< k <<"  "<<endl ;
     for (i=1;i<=nyrs_srv_age_c(k);i++)
     {
@@ -2253,7 +1996,6 @@ REPORT_SECTION
       L_report << yrs_srv_age_s(k,i)<< ", " << oac_srv_s(k,i) << ", Female/Total: "<< sum(oac_srv_s(k,i)(1,nages))  << " "<<Eff_N(oac_srv_s(k,i),eac_srv_s(k,i))<< endl; 
     }
   }
-
   L_report << endl << "Predicted_prop_Survey "<<endl;
   for (k=1;k<=nsrv;k++)
   {
@@ -2290,13 +2032,11 @@ REPORT_SECTION
   }
   L_report << "Partial_F  Female  0      " <<partial_F_f  << endl;
   L_report << "Partial_F  Male    0      " <<partial_F_m  << endl;
-
   for (k=1;k<=nsrv;k++)
   {
     L_report << "Survey female " << k <<"  " <<sel_srv_f(k) << endl;
     L_report << "Survey male   " << k <<"  " <<sel_srv_m(k) << endl;
   }
-
   L_report << endl<<"Female_spawning_biomass " << endl;
     for (i=styr;i<=endyr;i++)
       L_report <<i<<", "<<SSB(i)<<endl;
@@ -2304,7 +2044,6 @@ REPORT_SECTION
   L_report << endl<<"Total_biomass " << endl;
     for (i=styr;i<=endyr;i++)
       L_report <<i<<",  "<<TotBiom(i)<<endl;
-
   L_report <<endl<<endl;
   L_report <<"F40= " << F40 << endl;
   L_report <<"F35= " << F35 << endl;
@@ -2313,26 +2052,22 @@ REPORT_SECTION
   L_report << "Spawning_biomass_per_recruit_from_F40_harvest_rate " << SBF40<<endl;
   L_report << "Spawning_biomass_per_recruit_from_F35_harvest_rate " << SBF35<<endl;
   L_report << "Spawning_biomass_per_recruit_from_F30_harvest_rate " << SBF30<<endl;
-
   L_report << "Projected_spawning_biomass " << endl;
   L_report << "F40_spawning_biomass " << future_SSB(1) <<endl;
   L_report << "F35_spawning_biomass " << future_SSB(2) <<endl;
   L_report << "F30_spawning_biomass " << future_SSB(3) <<endl;
   L_report << "F=0_spawning_biomass " << future_SSB(4) <<endl;
-
   L_report << "Projected_total_biomass " << endl;
   L_report << "F40_total_biomass " << future_TotBiom(1) <<endl;
   L_report << "F35_total_biomass " << future_TotBiom(2) <<endl;
   L_report << "F30_total_biomass " << future_TotBiom(3) <<endl;
   L_report << "F=0_total_biomass " << future_TotBiom(4) <<endl;
-
   L_report << "Projected_catch " << endl;
   L_report << "F40_harvest " << future_catch(1) <<endl;
   L_report << "F35_harvest " << future_catch(2) <<endl;
   L_report << "three-yr-mean_harvest" << future_catch(3) <<endl;
   L_report << "F=0_harvest " << " 0 0 0 0 0 0 0 0 0 0 0 " <<endl;
   
-
   L_report << endl << "Likelihood_Components " << endl;
   L_report << "survey_likelihood " << srv_like << endl;
   L_report << "catch_likelihood " <<  catch_like << endl;
@@ -2345,19 +2080,15 @@ REPORT_SECTION
   L_report << "sigmaR_Prior " <<sigmaR_prior <<endl;
   L_report << "F_penalty " << fpen << endl;
 
-
-
   if (phase_env_cov>0)
   {
     // L_report << "alpha= " << q_alpha << endl;
     // L_report << "beta= " << q_beta << endl;
-
     // L_report << endl<<"Environmental_effect_q " << endl;
   // init_ivector n_env_cov(1,nsrv)
   // !!log_input(n_env_cov);
   // init_3darray env_cov(1,nsrv,1,n_env_cov,1,nyrs_srv)
   // !!  for (int j=1;j<=nsrv;j++) for (int k=1;k<=n_env_cov(j);k++) { env_cov(j,k) -= mean(env_cov(j,k)); }
-
     // for (i=1;i<=nyrs_srv(1);i++)
       // for (k=1;k<=n_env_cov(1);k++);
         // L_report <<yrs_srv(1,i)<<", "<<env_cov(1,k,i)<<", "<<endl;// mfexp(-q_alpha(1)+q_beta(1,k)*env_cov(1,k,i))<<endl;
@@ -2376,7 +2107,6 @@ REPORT_SECTION
   L_report << R_alpha << endl;
   L_report << "Ricker_beta = " << endl;
   L_report << R_beta << endl;
-
   L_report << "Estimated_catch_at_age " << endl;
   L_report <<"Fishery Year " << age_vector <<endl;
   for (k=1;k<=nfsh;k++)
@@ -2422,7 +2152,6 @@ REPORT_SECTION
   // exit(1) ;
   
   L_report << "SARA file for Angie Greig" << endl;
-
   L_report << "xxxlowfin sole       # stock  " << endl;
   L_report << "BSAI       # region     (AI AK BOG BSAI EBS GOA SEO WCWYK)" << endl;
   L_report << "xxxx       # ASSESS_YEAR - year assessment is presented to the SSC" << endl;
@@ -2454,12 +2183,10 @@ REPORT_SECTION
    for (i=styr;  i<=endyr; i++)
       L_report << i << "	";
       L_report<<endl;  
-
   L_report<<"#AGE - list of ages used in the model"<<endl;
    for (i=1; i<=20;i++)
       L_report << i << "	";
       L_report<<endl;    
-
   L_report <<"#RECRUITMENT - Number of recruits by year " << endl;
    for (i=styr;  i<=endyr;  i++)
 	   L_report  << natage_f(i,1)+natage_m(i,1) << "	";
@@ -2469,12 +2196,10 @@ REPORT_SECTION
    for (i=styr;  i<=endyr;  i++)
       L_report  << SSB(i) << "	";
       L_report<<endl;  
-
   L_report <<"#TOTALBIOMASS - Total biomass by year in metric tons " << endl;
    for (i=styr;  i<=endyr;  i++)
       L_report  << TotBiom << "	";
       L_report<<endl;
-
  // cout <<F_f<<endl;
  	
    L_report <<"#TOTFSHRYMORT - Fishing mortality rate by year " << endl;
@@ -2486,10 +2211,8 @@ REPORT_SECTION
    for (i=styr;  i<=endyr;  i++)
       L_report  << obs_catch(1,i) << "	";
       L_report<<endl;
-
   L_report <<"#MATURITY - Maturity ratio by age (females only)" << endl;  
       L_report  << maturity(endyr) << endl; 
-
   L_report <<"#SPAWNWT - Average spawning weight (in kg) for ages 8-20"<< endl; 
       L_report <<"0.165 0.212 0.259 0.292 327.8 0.361 0.39 0.412 0.429 0.46 0.47 0.49 0.56"<<endl;                              
       L_report<<endl;
@@ -2506,7 +2229,6 @@ REPORT_SECTION
   for (i=styr; i<=endyr;i++)
     L_report <<natage_f(i)<< "	";
     L_report<<endl;
-
   for (i=styr; i<=endyr;i++)
     L_report <<natage_m (i)<< "	";
     L_report<<endl;
@@ -2517,16 +2239,13 @@ REPORT_SECTION
  
    L_report <<wt_fsh_m_in(1,endyr)/1000  << "	";
    L_report<<endl;
-
   L_report << "#SELECTIVITY - Estimated fishery selectivity for females (first) males (second) at age " << endl;
    L_report <<" " <<sel_fsh_f(1,endyr);
    L_report<<endl;
-
    L_report <<" "  <<sel_fsh_m(1,endyr);
    L_report<<endl;
   L_report << "#SURVEYDESC"<<endl;
   L_report<<"EBS_trawl_survey BS_slope_trawl_survey AI_trawl_survey"<<endl;
-
   L_report<<"SURVEYMULT"<<endl;
   L_report<<"1 1 1"<<endl;
  
@@ -2537,29 +2256,22 @@ REPORT_SECTION
    for (i=1; i<=nsrv;i++) 
      L_report<< obs_srv(i)<< "	";
      L_report<< endl;
-
   L_report<<"#STOCKNOTES"<<endl;
   L_report<<"\"SAFE report indicates that this stock was not subjected to overfishing in 2012 and is neither overfished nor approaching a condition of being overfished in 2013.\""<<endl;
-
   if(last_phase()) write_projfile();
-
   cout <<"End of report file for phase "<<current_phase()<<endl;
 	// if (last_phase()) ssb_retro << SSB <<endl;
-
  
 BETWEEN_PHASES_SECTION
   // Set the msy selectivity to something reasonable???
-
   log_msy_sel_f = log_sel_fsh_f(1,endyr-2);
   log_msy_sel_m = log_sel_fsh_m(1,endyr-2);
-
 TOP_OF_MAIN_SECTION
   gradient_structure::set_MAX_NVAR_OFFSET(1600);
   gradient_structure::set_GRADSTACK_BUFFER_SIZE(200000);
   gradient_structure::set_NUM_DEPENDENT_VARIABLES(1800); 
   gradient_structure::set_CMPDIF_BUFFER_SIZE(2000000);
   arrmblsize=10000000;
-
 GLOBALS_SECTION
 	// Include AD class definitions
   #include <admodel.h>
@@ -2577,7 +2289,6 @@ GLOBALS_SECTION
 	*/
 	#undef REPORT
 	#define REPORT(object) R_report << #object "\n" << object << endl;
-
   #undef WriteData
   #define WriteData(object) SimDat << "#" #object "\n" << object << endl;
   ofstream writeinput("writeinput.log");
@@ -2598,14 +2309,12 @@ GLOBALS_SECTION
 RUNTIME_SECTION
    maximum_function_evaluations 1000,500,1000,6000
    convergence_criteria .0000001,.001,.00001,1e-7
-
 FUNCTION double mn_age(const dvar_vector& pobs)
   int lb1 = pobs.indexmin();
   int ub1 = pobs.indexmax();
   dvector av = age_vector(lb1,ub1)  ;
   double mobs = value(pobs*av);
   return mobs;
-
 FUNCTION double Sd_age(const dvar_vector& pobs, const dvar_vector& phat)
   int lb1 = pobs.indexmin();
   int ub1 = pobs.indexmax();
@@ -2613,7 +2322,6 @@ FUNCTION double Sd_age(const dvar_vector& pobs, const dvar_vector& phat)
   double mobs = value(pobs*av);
   double stmp = value(sqrt(elem_prod(av,av)*pobs - mobs*mobs));
   return stmp;
-
 FUNCTION double Eff_N_adj(const double, const dvar_vector& pobs, const dvar_vector& phat)
   int lb1 = pobs.indexmin();
   int ub1 = pobs.indexmax();
@@ -2623,7 +2331,6 @@ FUNCTION double Eff_N_adj(const double, const dvar_vector& pobs, const dvar_vect
   double rtmp = mobs-mhat;
   double stmp = value(sqrt(elem_prod(av,av)*pobs - mobs*mobs));
   return square(stmp)/square(rtmp);
-
 FUNCTION double Eff_N2(const dvar_vector& pobs, const dvar_vector& phat)
   int lb1 = pobs.indexmin();
   int ub1 = pobs.indexmax();
@@ -2633,14 +2340,11 @@ FUNCTION double Eff_N2(const dvar_vector& pobs, const dvar_vector& phat)
   double rtmp = mobs-mhat;
   double stmp = value(sqrt(elem_prod(av,av)*pobs - mobs*mobs));
   return square(stmp)/square(rtmp);
-
 FUNCTION double Eff_N(const dvar_vector& pobs, const dvar_vector& phat)
   dvar_vector rtmp = elem_div((pobs-phat),sqrt(elem_prod(phat,(1-phat))));
   double vtmp;
   vtmp = value(norm2(rtmp)/size_count(rtmp));
   return 1/vtmp;
-
-
 FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, double  TACin)
   dvariable dd = 10.;
   dvariable cc = TACin;
@@ -2649,14 +2353,12 @@ FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, dou
   dvariable btmp =  N_tmp_f * wttmp_f ;
   dvariable ftmp;
   ftmp = TACin/btmp;
-
   dvar_vector Fatmp_f = ftmp * partial_F_f;
   dvar_vector Fatmp_m = ftmp * partial_F_m;
   dvar_vector Z_tmp_f   = Fatmp_f + natmort_f;
   dvar_vector Z_tmp_m   = Fatmp_m + natmort_m;
   dvar_vector S_tmp_f   = exp(-Z_tmp_f);
   dvar_vector S_tmp_m   = exp(-Z_tmp_m);
-
   int icount;
   icount=0;
   while (dd > 1e-5)
@@ -2669,7 +2371,6 @@ FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, dou
     Fatmp_m = ftmp * partial_F_m;
     Z_tmp_m   = Fatmp_m + natmort_m;
     S_tmp_m   = mfexp( -Z_tmp_m );
-
     cc  = (wttmp_f * elem_prod(elem_div(Fatmp_f,  Z_tmp_f),elem_prod(1.-S_tmp_f,N_tmp_f))); // Catch equation (vectors)
     cc += (wttmp_m * elem_prod(elem_div(Fatmp_m,  Z_tmp_m),elem_prod(1.-S_tmp_m,N_tmp_m))); // Catch equation (vectors)
     dd = cc / TACin - 1.;
@@ -2679,8 +2380,6 @@ FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, dou
     if (icount>100) dd=1e-6;
   }
   return(ftmp);
-
-
   /* FUNCTION dvariable SolveF2(const dvar_vector& N_tmp, double  TACin)
   dvariable dd = 10.;
   dvariable cc = TACin;
@@ -2688,11 +2387,9 @@ FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, dou
   dvariable btmp =  N_tmp * wttmp ;
   dvariable ftmp;
   ftmp = TACin/btmp;
-
   dvar_vector Fatmp   = ftmp * partial_F;
   dvar_vector Z_tmp    = Fatmp+ natmort;
   dvar_vector S_tmp = exp(-Z_tmp);
-
   int icount;
   icount=0;
   while (dd > 1e-5)
@@ -2711,7 +2408,6 @@ FUNCTION dvariable SolveF2(const dvar_vector& N_tmp_f, dvar_vector& N_tmp_m, dou
   }
   return(ftmp);
   */
-
   
 FUNCTION Write_sd
  int m = 5; // the projection for Tier 1 stuff
@@ -2727,7 +2423,6 @@ FUNCTION Write_sd
    ABCreport <<        gm_b  * hm_f * adj_1  <<" "<< endl;
  }
  ABCreport.close();
-
  ofstream ABC_OFL("ABC_OFL.rep");
  ABC_OFL << "Year HM_Fmsyr AM_Fmsyr GM_Biom Catch_Assump ABC_HM OFL_AM Bmsy SSB Adjust CV_Biom CV_SSB ABC_T3 OFL_T3"<<endl;
  for (i = styr_fut;i<=endyr_fut;i++)
@@ -2735,7 +2430,6 @@ FUNCTION Write_sd
    dvariable cv_ssb = future_SSB.sd(m,i)/future_SSB(m,i);
    dvariable cv_b = ABC_biom.sd(i)/ABC_biom(i);
    dvariable gm_b = exp(log(ABC_biom(i))-(cv_b*cv_b)/2.);
-
    if(future_SSB(m,i) < Bmsy)
      adj_1 = value((future_SSB(m,i)/Bmsy - 0.05)/(1.-0.05));
    ABC_OFL << i                 <<" "<<
@@ -2756,7 +2450,6 @@ FUNCTION Write_sd
       // b1tmp          += elem_prod(natage_m(srvyrtmp),exp( -Z_m(srvyrtmp) * srv_mo_frac(k) )) * elem_prod(sel_srv_m(k),wt_srv_m(k,srvyrtmp));
 					 endl;
  }
-
  /*
    ABC_OFL <<"HM_F "
             << hm_f << " "<<hm_f<<endl 
@@ -2783,9 +2476,7 @@ FUNCTION Write_sd
             << maturity(endyr)              <<" "<<endl
             << "wt "<<wt_pop_fut_f          <<endl ;
  */
-
   ABC_OFL.close();
-
   // From AMAK 
  /* FUNCTION Oper_Model
  // Initialize things used here only
@@ -2793,7 +2484,6 @@ FUNCTION Write_sd
   int nsims;
   ifstream sim_in("nsims.dat");
   sim_in >> nsims; sim_in.close();
-
   dvector ran_srv_vect(1,nsrv);
   ofstream SaveOM("Om_Out.dat",ios::app);
   double C_tmp;
@@ -2828,17 +2518,14 @@ FUNCTION Write_sd
       ofstream srv_out("NewSrv.dat",ios::app);
       srv_out <<i<<" "<< new_srv<<endl; srv_out.close();
       system("ComputeTAC.bat"); // commandline function to get TAC (catchnext.dat)
-
       // Now read in TAC (actual catch)
       ifstream CatchNext("CatchNext.dat");
       CatchNext >> C_tmp; CatchNext.close();
       Fnow = SolveF2(endyr,nage_future(i), C_tmp);
-
       F_future(1,i) = sel_fsh(1,endyr) * Fnow;
       Z_future(i)   = F_future(1,i) + natmort;
       S_future(i)   = mfexp(-Z_future(i));
       // nage_future(i,1)  = SRecruit( Sp_Biom_future(i-rec_age) ) * mfexp(rec_dev_future(i)) ;     
-
       nage_future(i,1)  = meanrec;
       Sp_Biom_future(i) = wt_mature * elem_prod(nage_future(i),pow(S_future(i),spmo_frac)) ;
       // Now graduate for the next year....
@@ -2910,8 +2597,6 @@ FUNCTION Write_sd
   WriteData( srv_mo); 
   WriteData( n_wts);
   WriteData( growth_cov);
-
-
 FUNCTION Get_wt_age
   incr_dev.initialize();
   if (active(yr_incr)||active(age_incr)||active(growth_alpha))
@@ -2924,7 +2609,7 @@ FUNCTION Get_wt_age
       case 1 : // Use empirical (values in data file) mean wts at age
         // No need to do anything since they are initialized at these values...
       break;
-      case 3 : // Use base growth values (not estimated) and deviations decomposed by year and age
+      case 2 : // Use base growth values (not estimated) and deviations decomposed by year and age
       {
         // Do it once for all years then apply to each fishery and survey...
         // initialize survey "1" and first year of growth to mean
@@ -2944,19 +2629,17 @@ FUNCTION Get_wt_age
         }
         Get_Pred_wt();
       }
-      break;  
-      
-      case 2 : // Use base growth values (not estimated) and deviations as fn of temperature and // decomposed by year and age
+      break;
+      case 3 : // Use base growth values (not estimated) and deviations as fn of temperature and // decomposed by year and age
       {
         Initial_wt();
         for (i=styr+1;i<=endyr;i++)
         {
           // Age component estimated from 5-15
           // if (i >=1982)
-            incr_dev(i)(4,nages-7)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
+            incr_dev(i)(5,nages-5)     = growth_alpha * growth_cov(i) ; // + age_incr; vestigial
           // else 
           //   incr_dev(i)(5,nages-5)     = 0.;
-
           incr_dev(i)(nages-4,nages) = incr_dev(i,nages-5) ;
           incr_dev(i)(2,4) = incr_dev(i,5) ;
           wt_srv_f(1,i,1) = wt_srv_f(1,i-1,1);
@@ -2977,7 +2660,6 @@ FUNCTION Initial_wt
   wt_srv_m(1,styr) = wt_vbg_m;
   wt_pop_f(styr)   = wt_vbg_f;
   wt_pop_m(styr)   = wt_vbg_m;
-
 FUNCTION Get_Pred_wt
   // Get predicted weights
   for (i=styr_wt;i<=endyr_wt;i++)
@@ -2999,31 +2681,24 @@ FUNCTION Get_Pred_wt
       wt_fsh_f(k,i) = wt_srv_f(1,i) ;
       wt_fsh_m(k,i) = wt_srv_m(1,i) ;
     }
-
 FUNCTION Write_R_wts
  
   R_report<<"Yr"<<endl; for (i=styr;i<=endyr;i++) R_report<<i<<" "; R_report<<endl;
   R_report<<"Yr_wt"<<endl; for (i=styr_wt;i<=endyr_wt;i++) R_report<<i<<" "; R_report<<endl;
-
   R_report<<"wt_obs_f" <<endl;
   R_report<<  wt_obs_f  <<endl;
   R_report<<"wt_pred_f"<<endl;
   R_report<<  wt_pred_f <<endl;
-
   R_report<<"wt_obs_m" <<endl;
   R_report<<  wt_obs_m  <<endl;
   R_report<<"wt_pred_m"<<endl;
   R_report<< wt_pred_m  <<endl;
-
   R_report<<"wt_srv_f" <<endl;
   R_report<<  wt_srv_f  <<endl;
-
   R_report<<"wt_srv_m" <<endl;
   R_report<<  wt_srv_m  <<endl;
-
   R_report<<"wt_like"  <<endl;
   R_report <<  wt_like(1)<<endl;
-
   // Make a dataframe (long) with year, Population, report << "Estimated_sex_ratio Year Total Mature Age_7+"<< endl;
   R_report<<"Sex_ratio_population"  <<endl;
   for (i=styr;i<=endyr;i++)
@@ -3036,7 +2711,6 @@ FUNCTION Write_R_wts
   {
     R_report         << i << " "<< 
      sum(elem_prod(maturity(i),natage_f(i)))/sum(elem_prod(maturity(i),natage_f(i)+natage_m(i)))<<endl;
-
     report_sex_ratio << i << " Population "<< sum(natage_f(i))/sum(natage_f(i)+natage_m(i))<<endl;
     report_sex_ratio << i << " Mature "<< 
      sum(elem_prod(maturity(i),natage_f(i)))/sum(elem_prod(maturity(i),natage_f(i)+natage_m(i)))<<endl;
@@ -3074,10 +2748,8 @@ FUNCTION Write_R_wts
       report_sex_ratio << yrs_srv_age_s(k,i) << " Survey_obs "<< sum(oac_srv_s(k,i)(1,nages)) /sum(oac_srv_s(k,i)) << endl;
   }
  }
-
 FUNCTION Write_R
   Write_R_wts();
-
 	REPORT(Z_f);
 	REPORT(Z_m);
 	REPORT(F_f);
@@ -3096,7 +2768,6 @@ FUNCTION Write_R
     R_report<<i<<" "<<Sp_Biom_NoFishR(i)<<" "<<Sp_Biom_NoFishR.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
   */ 
-
   REPORT(nLogPosterior);
   REPORT(natmort_f);
   REPORT(natmort_m);
@@ -3107,7 +2778,6 @@ FUNCTION Write_R
   REPORT(sel_srv_m);
   REPORT(sel_fsh_f);
   REPORT(sel_fsh_m);
-
   R_report << "survey_likelihood "         << endl << srv_like     << endl;
   R_report << "catch_likelihood "          << endl << catch_like   << endl;
   R_report << "age_likelihood_for_fishery" << endl << age_like_fsh << endl;
@@ -3138,6 +2808,7 @@ FUNCTION Write_R
   R_report <<"wt_vbg_m" <<endl <<wt_vbg_m<< endl; 
   R_report <<"wt_pop_f" <<endl <<wt_pop_f<< endl;
   R_report <<"wt_pop_m" <<endl <<wt_pop_m<< endl;
+  R_report <<"nsmpl_srv_s"<<endl<<nsmpl_srv_s<< endl;
    
   R_report<<"Future_F"<<endl; 
 	for (i=styr_fut;i<=endyr_fut;i++) 
@@ -3160,7 +2831,6 @@ FUNCTION Write_R
     double ub=value(TotBiom(i)*exp(2.*sqrt(log(1+square(TotBiom.sd(i))/square(TotBiom(i))))));
     R_report<<i<<" "<<TotBiom(i)<<" "<<TotBiom.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
-
   R_report<<"yr_bts"<<endl;
   R_report<<yrs_srv(1)<<endl;
   R_report<<"eb_bts"<<endl;
@@ -3176,14 +2846,12 @@ FUNCTION Write_R
   R_report<<obs_srv(1)<<endl;
   R_report<<"sd_ob_bts"<<endl;
   R_report<<obs_se_srv(1)<<endl;
-
   R_report<<"R"<<endl; for (i=styr;i<=endyr;i++) 
   {
     double lb=value(pred_rec(i)/exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
     double ub=value(pred_rec(i)*exp(2.*sqrt(log(1+square(pred_rec.sd(i))/square(pred_rec(i))))));
     R_report<<i<<" "<<pred_rec(i)<<" "<<pred_rec.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
-
   int k=1;
   R_report<<"q"<<endl; for (i=1;i<=nyrs_srv(k);i++) 
   {
@@ -3191,7 +2859,6 @@ FUNCTION Write_R
     double ub=value(q_srv(i)*exp(2.*sqrt(log(1+square(q_srv.sd(i))/square(q_srv(i))))));
     R_report<<i<<" "<<q_srv(i)<<" "<<q_srv.sd(i)<<" "<<lb<<" "<<ub<<endl;
   }
-
   for (k=1;k<=nsrv;k++)
   {
     R_report << endl<< "yrs_srv"<<endl;
@@ -3202,60 +2869,49 @@ FUNCTION Write_R
 	  R_report<< endl;
 	}      
   R_report.close();
-
 FUNCTION write_projfile
-    projmod <<"fm_projection_model_output  "<<endl;
-    projmod <<"0 # SSL Species???         " <<endl;                       
-    projmod <<"0 # Constant  buffer  of  Dorn? " <<endl;                          
-    projmod <<"1 # Number  of  fsheries    "<<endl;                          
-    projmod <<"2 # Number  of  sexes??     "<<endl;
+    projmod <<"#runname     \n fm_projection_model_output  "<<endl;
+    projmod <<"#ssl_spp     \n 0 " <<endl;                       
+    projmod <<"#Dorn_buffer \n 0 " <<endl;                          
+    projmod <<"#nfsh        \n   " <<nfsh <<endl;                          
+    projmod <<"#nsex        \n 2 " <<endl;
 		double mean5yrF=0.;
 		for (int iyr=endyr-5;iyr<=endyr;iyr++) 
 		  mean5yrF += max(value(F_f(1,iyr)));  mean5yrF/=5.;
-    projmod <<mean5yrF <<" # averagei 5yr f"<<endl;
-    projmod << "1.0 # author  f            "<<endl;
-    projmod << "0.4     # SPR ABC          "<<endl;               
-    projmod << "0.35    # SPR MSY          "<<endl;
-    projmod << "2 # Spawnmo                "<<endl;
-    projmod << "20  # Number  of  ages     "<<endl;
-    projmod << "1 # Fratio                 "<<endl;
-    projmod << "#females first             "<<endl;
+    projmod << "#avgF5yr \n "<< mean5yrF <<endl;
+    projmod << "#F40_mult \n 1.0  "<<endl;
+    projmod << "#spr_abc  \n 0.4  "<<endl;               
+    projmod << "#spr_abc  \n 0.35 "<<endl;
+    projmod << "#sp_mo \n " <<spawnmo <<endl;
+    projmod << "#nages \n " << nages  <<endl;
+  // Should calc case for number of fisheries >1 OjO
+    projmod << "#Frat \n " << 1 <<endl;
+    projmod << "#M       "      <<endl; 
     for (j=1;j<=nages;j++)  projmod << natmort_f <<" "; projmod<<endl;
-    projmod << "#male"<<endl;
     for (j=1;j<=nages;j++)  projmod << natmort_m <<" "; projmod<<endl;
-    projmod << "# Maturity Females"<<endl;                     
+    projmod << "#pmat "<<endl; // female and male maturity set to be the same...OjO
     for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
-    projmod << "# Maturity Males same as females!!    "<<endl;
     for (j=1;j<=nages;j++)  projmod << maturity(endyr,j) <<" "; projmod<<endl;
-    projmod << "# Wt  spawn females                                 "<<endl;
+    projmod << "#wtage_sp "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_pop_f(endyr,j) <<" "; projmod<<endl;
-    // SSB(i)  =  elem_prod(natage_f(i),pow(S_f(i),spmo_frac)) * elem_prod(wt_pop_f(i),maturity(i));  //need to add recruitment lag
-    // 3darray wt_fsh_f(1,nfsh,styr,endyr,1,nages)       //Values of fishery weight at age (g)
-    projmod << "# WtAge Females,  by  fishery                               "<<endl;
+    projmod << "#wtage_fsh "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_fsh_f(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# WtAge Males,  by  fishery                               "<<endl;
     for (j=1;j<=nages;j++)  projmod << wt_fsh_m(1,endyr,j) <<" "; projmod<<endl;
     // 3darray sel_fsh_m(1,nfsh,styr,endyr,1,nages)
-    projmod << "# Selectivity Females,  by  fishery                               "<<endl;
-    for (j=1;j<=nages;j++)  projmod << sel_fsh_f(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# Selectivity males,  by  fishery"<<endl;
-    for (j=1;j<=nages;j++)  projmod << sel_fsh_m(1,endyr,j) <<" "; projmod<<endl;
-    projmod << "# N at  age in  endyr  Females,  Males                         "<<endl;
+    projmod << "#sel"<<endl;
+    for (int k=1;k<=nfsh;k++) for (j=1;j<=nages;j++)  projmod << sel_fsh_f(k,endyr,j) <<" "; projmod<<endl;
+    for (int k=1;k<=nfsh;k++) for (j=1;j<=nages;j++)  projmod << sel_fsh_m(k,endyr,j) <<" "; projmod<<endl;
+    projmod << "#N" <<endl;
     for (j=1;j<=nages;j++)  projmod << natage_f(endyr,j) <<" "; projmod<<endl;
     for (j=1;j<=nages;j++)  projmod << natage_m(endyr,j) <<" "; projmod<<endl;
     // matrix natage_f(styr,endyr,1,nages)
-    projmod << "# No  Recruitments "<<endl;                                   
+    projmod << "#nyrs"<<endl;
     int nrecs = endyr - 1977 - 5;                           
     projmod << nrecs <<endl;
-    projmod << "# Recruitment  1978-2004"<<endl;
+    projmod << "#R"<<endl;
     for (j=1978;j<(nrecs+1978);j++)  projmod << natage_f(j,1) <<" "; projmod<<endl;
-    projmod << "# SSB       "<<endl;                                          
-    projmod << "# used only for S/R analysis "<<endl;
+    projmod << "#SSB       "<<endl;                                          // projmod << "# used only for S/R analysis "<<endl;
     for (j=1977;j<(nrecs+1977);j++)  projmod << SSB(j) <<" "; projmod<<endl;
-    // projmod << "60634.2 74206.2 88603.3 99620.3 104246  107030  113149  124035  124795  140114  158678  182136  205398  248734  316385  349013  377421  399774  480785  578688  661617  701288  745334  773574  771844  753292  726387"<<endl;
-
-
-
 FINAL_SECTION
   if (!do_wt_only)
   {
@@ -3273,4 +2929,3 @@ FINAL_SECTION
     Write_R_wts();
   /*
 		*/
-
