@@ -11,7 +11,6 @@ source('R/LENGTH_BY_CATCH_BS_short.r')
 source('R/GET_BS_BIOM.r')
 source('R/GET_BS_ACOMP1.r')
 source('R/GET_RAW_AGE_LEN_WT.R')
-source('R/LENGTH_BY_CATCH_combined.r')
 
 devtools::install_github("BenWilliams-NOAA/swo")
 
