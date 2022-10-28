@@ -11,10 +11,10 @@ library(shinystan)
 ### working directory during execution
 
 ## Define the path and model name
-m <- './fm'                               # model name
-p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_1/'                                   # path to model
+m <- './fm_bnds'                               # model name
+p <- '/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0_smbounds/'                                   # path to model
 ## Assumes current working directory is where this R script is
-setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_1")
+setwd("/Users/ingridspies/admbmodels/BSAI_YFS/assessments/yfs/runs/m22_0_smbounds")
 (wd <- getwd())
 
 ## It also assumes the model was optimized with successful
@@ -41,17 +41,16 @@ setwd(wd)
 ## !! Note in some environments like RStudio parallel output is
 ## not printed to screen !!
 
-set.seed(1)
-thin <- 10#10000
-iter <- 10*thin#1000*thin
+set.seed(1234)#1 and 100 and 1234 failed on 22_0
+thin <- 10000#10000
+iter <- 1000*thin#1000*thin
 fit <- sample_rwm(model=m, path=p, iter=iter, warmup=iter/4,
                   chains=chains, thin=thin)#This one takes a while
-saveRDS(fit, 'm22_0_SR.RDS')
+saveRDS(fit, 'm22_0_smboundsLARGE.RDS')
 
 ## Key information from run. Including the two recommended
 ## convergence diagnostics:
-fit <- readRDS('m22_0.RDS')
-fit <- readRDS('m22_0_noSR.RDS')
+fit <- readRDS('m22_0_smboundsLARGE.RDS')
 summary(fit)
 
 ## Stored internally like this but you rarely need to access

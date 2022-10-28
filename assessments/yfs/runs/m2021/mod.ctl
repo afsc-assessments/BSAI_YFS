@@ -1,3 +1,7 @@
+#model_name 
+#Base
+#datafile 
+#../data/yfs_2021_catwt.dat
 #Growth_Option
 	1
 #ABC_age_lb
