@@ -110,3 +110,10 @@ launch_shinyadmb(fit)
 
 post <- extract_samples(fit)
 str(post)
+
+pdf('marginals.pdf', onefile=TRUE, width=7,height=5)
+
+plot_marginals(fit,par=6)#mean log(Recruitment)
+dev.off()
+
+fit$monitor$n_eff[6] #meanlogrec
